@@ -6324,15 +6324,15 @@ public final class ThemisProtos {
   public interface ThemisPrewriteResultOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // required bytes newerWriteTs = 1;
+    // required int64 newerWriteTs = 1;
     /**
-     * <code>required bytes newerWriteTs = 1;</code>
+     * <code>required int64 newerWriteTs = 1;</code>
      */
     boolean hasNewerWriteTs();
     /**
-     * <code>required bytes newerWriteTs = 1;</code>
+     * <code>required int64 newerWriteTs = 1;</code>
      */
-    com.google.protobuf.ByteString getNewerWriteTs();
+    long getNewerWriteTs();
 
     // required bytes existLock = 2;
     /**
@@ -6364,15 +6364,15 @@ public final class ThemisProtos {
      */
     com.google.protobuf.ByteString getQualifier();
 
-    // required bytes lockExpired = 5;
+    // required bool lockExpired = 5;
     /**
-     * <code>required bytes lockExpired = 5;</code>
+     * <code>required bool lockExpired = 5;</code>
      */
     boolean hasLockExpired();
     /**
-     * <code>required bytes lockExpired = 5;</code>
+     * <code>required bool lockExpired = 5;</code>
      */
-    com.google.protobuf.ByteString getLockExpired();
+    boolean getLockExpired();
 
     // required bytes row = 6;
     /**
@@ -6435,9 +6435,9 @@ public final class ThemisProtos {
               }
               break;
             }
-            case 10: {
+            case 8: {
               bitField0_ |= 0x00000001;
-              newerWriteTs_ = input.readBytes();
+              newerWriteTs_ = input.readInt64();
               break;
             }
             case 18: {
@@ -6455,9 +6455,9 @@ public final class ThemisProtos {
               qualifier_ = input.readBytes();
               break;
             }
-            case 42: {
+            case 40: {
               bitField0_ |= 0x00000010;
-              lockExpired_ = input.readBytes();
+              lockExpired_ = input.readBool();
               break;
             }
             case 50: {
@@ -6505,19 +6505,19 @@ public final class ThemisProtos {
     }
 
     private int bitField0_;
-    // required bytes newerWriteTs = 1;
+    // required int64 newerWriteTs = 1;
     public static final int NEWERWRITETS_FIELD_NUMBER = 1;
-    private com.google.protobuf.ByteString newerWriteTs_;
+    private long newerWriteTs_;
     /**
-     * <code>required bytes newerWriteTs = 1;</code>
+     * <code>required int64 newerWriteTs = 1;</code>
      */
     public boolean hasNewerWriteTs() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required bytes newerWriteTs = 1;</code>
+     * <code>required int64 newerWriteTs = 1;</code>
      */
-    public com.google.protobuf.ByteString getNewerWriteTs() {
+    public long getNewerWriteTs() {
       return newerWriteTs_;
     }
 
@@ -6569,19 +6569,19 @@ public final class ThemisProtos {
       return qualifier_;
     }
 
-    // required bytes lockExpired = 5;
+    // required bool lockExpired = 5;
     public static final int LOCKEXPIRED_FIELD_NUMBER = 5;
-    private com.google.protobuf.ByteString lockExpired_;
+    private boolean lockExpired_;
     /**
-     * <code>required bytes lockExpired = 5;</code>
+     * <code>required bool lockExpired = 5;</code>
      */
     public boolean hasLockExpired() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
-     * <code>required bytes lockExpired = 5;</code>
+     * <code>required bool lockExpired = 5;</code>
      */
-    public com.google.protobuf.ByteString getLockExpired() {
+    public boolean getLockExpired() {
       return lockExpired_;
     }
 
@@ -6602,11 +6602,11 @@ public final class ThemisProtos {
     }
 
     private void initFields() {
-      newerWriteTs_ = com.google.protobuf.ByteString.EMPTY;
+      newerWriteTs_ = 0L;
       existLock_ = com.google.protobuf.ByteString.EMPTY;
       family_ = com.google.protobuf.ByteString.EMPTY;
       qualifier_ = com.google.protobuf.ByteString.EMPTY;
-      lockExpired_ = com.google.protobuf.ByteString.EMPTY;
+      lockExpired_ = false;
       row_ = com.google.protobuf.ByteString.EMPTY;
     }
     private byte memoizedIsInitialized = -1;
@@ -6646,7 +6646,7 @@ public final class ThemisProtos {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, newerWriteTs_);
+        output.writeInt64(1, newerWriteTs_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, existLock_);
@@ -6658,7 +6658,7 @@ public final class ThemisProtos {
         output.writeBytes(4, qualifier_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeBytes(5, lockExpired_);
+        output.writeBool(5, lockExpired_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeBytes(6, row_);
@@ -6674,7 +6674,7 @@ public final class ThemisProtos {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, newerWriteTs_);
+          .computeInt64Size(1, newerWriteTs_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
@@ -6690,7 +6690,7 @@ public final class ThemisProtos {
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(5, lockExpired_);
+          .computeBoolSize(5, lockExpired_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
@@ -6721,8 +6721,8 @@ public final class ThemisProtos {
       boolean result = true;
       result = result && (hasNewerWriteTs() == other.hasNewerWriteTs());
       if (hasNewerWriteTs()) {
-        result = result && getNewerWriteTs()
-            .equals(other.getNewerWriteTs());
+        result = result && (getNewerWriteTs()
+            == other.getNewerWriteTs());
       }
       result = result && (hasExistLock() == other.hasExistLock());
       if (hasExistLock()) {
@@ -6741,8 +6741,8 @@ public final class ThemisProtos {
       }
       result = result && (hasLockExpired() == other.hasLockExpired());
       if (hasLockExpired()) {
-        result = result && getLockExpired()
-            .equals(other.getLockExpired());
+        result = result && (getLockExpired()
+            == other.getLockExpired());
       }
       result = result && (hasRow() == other.hasRow());
       if (hasRow()) {
@@ -6764,7 +6764,7 @@ public final class ThemisProtos {
       hash = (19 * hash) + getDescriptorForType().hashCode();
       if (hasNewerWriteTs()) {
         hash = (37 * hash) + NEWERWRITETS_FIELD_NUMBER;
-        hash = (53 * hash) + getNewerWriteTs().hashCode();
+        hash = (53 * hash) + hashLong(getNewerWriteTs());
       }
       if (hasExistLock()) {
         hash = (37 * hash) + EXISTLOCK_FIELD_NUMBER;
@@ -6780,7 +6780,7 @@ public final class ThemisProtos {
       }
       if (hasLockExpired()) {
         hash = (37 * hash) + LOCKEXPIRED_FIELD_NUMBER;
-        hash = (53 * hash) + getLockExpired().hashCode();
+        hash = (53 * hash) + hashBoolean(getLockExpired());
       }
       if (hasRow()) {
         hash = (37 * hash) + ROW_FIELD_NUMBER;
@@ -6895,7 +6895,7 @@ public final class ThemisProtos {
 
       public Builder clear() {
         super.clear();
-        newerWriteTs_ = com.google.protobuf.ByteString.EMPTY;
+        newerWriteTs_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000001);
         existLock_ = com.google.protobuf.ByteString.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -6903,7 +6903,7 @@ public final class ThemisProtos {
         bitField0_ = (bitField0_ & ~0x00000004);
         qualifier_ = com.google.protobuf.ByteString.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000008);
-        lockExpired_ = com.google.protobuf.ByteString.EMPTY;
+        lockExpired_ = false;
         bitField0_ = (bitField0_ & ~0x00000010);
         row_ = com.google.protobuf.ByteString.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000020);
@@ -7044,38 +7044,35 @@ public final class ThemisProtos {
       }
       private int bitField0_;
 
-      // required bytes newerWriteTs = 1;
-      private com.google.protobuf.ByteString newerWriteTs_ = com.google.protobuf.ByteString.EMPTY;
+      // required int64 newerWriteTs = 1;
+      private long newerWriteTs_ ;
       /**
-       * <code>required bytes newerWriteTs = 1;</code>
+       * <code>required int64 newerWriteTs = 1;</code>
        */
       public boolean hasNewerWriteTs() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required bytes newerWriteTs = 1;</code>
+       * <code>required int64 newerWriteTs = 1;</code>
        */
-      public com.google.protobuf.ByteString getNewerWriteTs() {
+      public long getNewerWriteTs() {
         return newerWriteTs_;
       }
       /**
-       * <code>required bytes newerWriteTs = 1;</code>
+       * <code>required int64 newerWriteTs = 1;</code>
        */
-      public Builder setNewerWriteTs(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+      public Builder setNewerWriteTs(long value) {
+        bitField0_ |= 0x00000001;
         newerWriteTs_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required bytes newerWriteTs = 1;</code>
+       * <code>required int64 newerWriteTs = 1;</code>
        */
       public Builder clearNewerWriteTs() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        newerWriteTs_ = getDefaultInstance().getNewerWriteTs();
+        newerWriteTs_ = 0L;
         onChanged();
         return this;
       }
@@ -7188,38 +7185,35 @@ public final class ThemisProtos {
         return this;
       }
 
-      // required bytes lockExpired = 5;
-      private com.google.protobuf.ByteString lockExpired_ = com.google.protobuf.ByteString.EMPTY;
+      // required bool lockExpired = 5;
+      private boolean lockExpired_ ;
       /**
-       * <code>required bytes lockExpired = 5;</code>
+       * <code>required bool lockExpired = 5;</code>
        */
       public boolean hasLockExpired() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
-       * <code>required bytes lockExpired = 5;</code>
+       * <code>required bool lockExpired = 5;</code>
        */
-      public com.google.protobuf.ByteString getLockExpired() {
+      public boolean getLockExpired() {
         return lockExpired_;
       }
       /**
-       * <code>required bytes lockExpired = 5;</code>
+       * <code>required bool lockExpired = 5;</code>
        */
-      public Builder setLockExpired(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000010;
+      public Builder setLockExpired(boolean value) {
+        bitField0_ |= 0x00000010;
         lockExpired_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required bytes lockExpired = 5;</code>
+       * <code>required bool lockExpired = 5;</code>
        */
       public Builder clearLockExpired() {
         bitField0_ = (bitField0_ & ~0x00000010);
-        lockExpired_ = getDefaultInstance().getLockExpired();
+        lockExpired_ = false;
         onChanged();
         return this;
       }
@@ -14426,9 +14420,9 @@ public final class ThemisProtos {
       "ondaryResponse\0223\n\024themisPrewriteResult\030\001" +
       " \003(\0132\025.ThemisPrewriteResult\022\027\n\017rowsNotIn" +
       "Region\030\002 \003(\014\"\204\001\n\024ThemisPrewriteResult\022\024\n" +
-      "\014newerWriteTs\030\001 \002(\014\022\021\n\texistLock\030\002 \002(\014\022\016",
+      "\014newerWriteTs\030\001 \002(\003\022\021\n\texistLock\030\002 \002(\014\022\016",
       "\n\006family\030\003 \002(\014\022\021\n\tqualifier\030\004 \002(\014\022\023\n\013loc" +
-      "kExpired\030\005 \002(\014\022\013\n\003row\030\006 \002(\014\":\n\023ThemisCom" +
+      "kExpired\030\005 \002(\010\022\013\n\003row\030\006 \002(\014\":\n\023ThemisCom" +
       "mitRequest\022#\n\014themisCommit\030\001 \002(\0132\r.Themi" +
       "sCommit\"&\n\024ThemisCommitResponse\022\016\n\006resul" +
       "t\030\001 \002(\010\"H\n!ThemisBatchCommitSecondaryReq" +

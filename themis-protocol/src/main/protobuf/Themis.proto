@@ -50,11 +50,11 @@ message ThemisBatchPrewriteSecondaryResponse {
 }
 
 message ThemisPrewriteResult {
-	required bytes newerWriteTs = 1;
+	required int64 newerWriteTs = 1;
 	required bytes existLock = 2;
 	required bytes family = 3;
 	required bytes qualifier = 4;
-	required bytes lockExpired = 5;
+	required bool lockExpired = 5;
 	required bytes row = 6;
 }
 

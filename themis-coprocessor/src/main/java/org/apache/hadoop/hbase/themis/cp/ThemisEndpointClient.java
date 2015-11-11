@@ -280,8 +280,8 @@ public class ThemisEndpointClient {
 
   protected ThemisLock judgePerwriteResultRow(byte[] tableName, byte[] row, ThemisPrewriteResult prewriteResult,
       long prewriteTs) throws IOException {
-    if (prewriteResult != null && !prewriteResult.getNewerWriteTs().isEmpty()) {
-      long commitTs = Bytes.toLong(prewriteResult.getNewerWriteTs().toByteArray());
+    if (prewriteResult != null && prewriteResult.getNewerWriteTs() > 0) {
+      long commitTs = prewriteResult.getNewerWriteTs();
       if (commitTs != 0) {
         throw new WriteConflictException(
             "encounter write with larger timestamp than prewriteTs=" + prewriteTs + ", commitTs=" + commitTs);
@@ -290,7 +290,7 @@ public class ThemisEndpointClient {
         ColumnCoordinate column = new ColumnCoordinate(tableName, row, prewriteResult.getFamily().toByteArray(),
             prewriteResult.getQualifier().toByteArray());
         lock.setColumn(column);
-        lock.setLockExpired(Bytes.toBoolean(prewriteResult.getLockExpired().toByteArray()));
+        lock.setLockExpired(prewriteResult.getLockExpired());
         return lock;
       }
     }

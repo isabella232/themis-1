@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +23,6 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.coprocessor.CoprocessorException;
 import org.apache.hadoop.hbase.coprocessor.CoprocessorService;
 import org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment;
-import org.apache.hadoop.hbase.exceptions.RegionMovedException;
 import org.apache.hadoop.hbase.master.ThemisMasterObserver;
 import org.apache.hadoop.hbase.protobuf.ProtobufUtil;
 import org.apache.hadoop.hbase.protobuf.ResponseConverter;
@@ -39,7 +36,6 @@ import org.apache.hadoop.hbase.themis.columns.ColumnMutation;
 import org.apache.hadoop.hbase.themis.columns.ColumnUtil;
 import org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos;
 import org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.ThemisBatchGetResponse;
-import org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.ThemisBatchGetRequest;
 import org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.EraseLockRequest;
 import org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.EraseLockResponse;
 import org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.LockExpiredRequest;
@@ -62,7 +58,6 @@ import org.apache.hadoop.hbase.themis.exception.TransactionExpiredException;
 import org.apache.hadoop.hbase.themis.lock.ThemisLock;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.util.Pair;
-import org.apache.hadoop.hbase.util.Threads;
 import org.apache.hadoop.metrics.util.MetricsTimeVaryingRate;
 
 import com.google.common.collect.Lists;
@@ -367,7 +362,7 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
   }
   
   private ThemisPrewriteResult prewriteRow(RpcController controller, ThemisPrewrite prewrite, boolean isSingleRow) {
-    byte[][] conflict = null;
+    ThemisPrewriteResult conflict = null;
     try {
       conflict = prewriteRow(prewrite.getRow().toByteArray(),
           ColumnMutation.toColumnMutations(prewrite.getMutationsList()), prewrite.getPrewriteTs(),
@@ -377,13 +372,9 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
       LOG.error("prewrite fail", e);
       ResponseConverter.setControllerException(controller, e);
     }
-
     if (conflict != null) {
-      return ThemisPrewriteResult.newBuilder().setNewerWriteTs(wrapByte(conflict[0]))
-          .setExistLock(wrapByte(conflict[1])).setFamily(wrapByte(conflict[2])).setQualifier(wrapByte(conflict[3]))
-          .setLockExpired(wrapByte(conflict[4])).setRow(prewrite.getRow()).build();
+      return conflict;
     }
-
     return null;
   }
 
@@ -454,7 +445,7 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
     }
   }
   
-  public byte[][] prewriteRow(final byte[] row, final List<ColumnMutation> mutations,
+  public ThemisPrewriteResult prewriteRow(final byte[] row, final List<ColumnMutation> mutations,
       final long prewriteTs, final byte[] secondaryLock, final byte[] primaryLock,
       final int primaryIndex, final boolean singleRow) throws IOException {
     // TODO : use ms enough?
@@ -463,13 +454,13 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
       checkFamily(mutations);
       checkWriteTTL(System.currentTimeMillis(), prewriteTs, row);
       checkPrimaryLockAndIndex(primaryLock, primaryIndex);
-      return new MutationCallable<byte[][]>(row) {
-        public byte[][] doMutation(HRegion region, RowLock rowLock) throws IOException {
+      return new MutationCallable<ThemisPrewriteResult>(row) {
+        public ThemisPrewriteResult doMutation(HRegion region, RowLock rowLock) throws IOException {
           // firstly, check conflict for each column
           // TODO : check one row one time to improve efficiency?
           for (ColumnMutation mutation : mutations) {
             // TODO : make sure, won't encounter a lock with the same timestamp
-            byte[][] conflict = checkPrewriteConflict(region, row, mutation, prewriteTs);
+            ThemisPrewriteResult conflict = checkPrewriteConflict(region, row, mutation, prewriteTs);
             if (conflict != null) {
               return conflict;
             }
@@ -534,7 +525,7 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
   // check lock conflict and new write conflict. return null if no conflicts encountered; otherwise,
   // the first byte[] return the bytes of timestamp which is newer than prewriteTs, the secondary
   // byte[] will return the conflict lock if encounters lock conflict
-  protected byte[][] checkPrewriteConflict(HRegion region, byte[] row, Column column,
+  protected ThemisPrewriteResult checkPrewriteConflict(HRegion region, byte[] row, Column column,
       long prewriteTs) throws IOException {
     Column lockColumn = ColumnUtil.getLockColumn(column);
     // check no lock exist
@@ -551,7 +542,7 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
     result = getFromRegion(region, get,
       ThemisCpStatistics.getThemisCpStatistics().prewriteReadWriteLatency);
     Long newerWriteTs = result.isEmpty() ? null : result.list().get(0).getTimestamp();
-    byte[][] conflict = judgePrewriteConflict(column, existLockBytes, newerWriteTs, lockExpired);
+    ThemisPrewriteResult conflict = judgePrewriteConflict(row, column, existLockBytes, newerWriteTs, lockExpired);
     if (conflict != null) {
       LOG.warn("encounter conflict when prewrite, tableName="
           + Bytes.toString(region.getTableDesc().getName()) + ", row=" + Bytes.toString(row)
@@ -560,7 +551,7 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
     return conflict;
   }
   
-  protected byte[][] judgePrewriteConflict(Column column, byte[] existLockBytes, Long newerWriteTs,
+  protected ThemisPrewriteResult judgePrewriteConflict(byte[] row, Column column, byte[] existLockBytes, Long newerWriteTs,
       boolean lockExpired) {
     if (newerWriteTs != null || existLockBytes != null) {
       newerWriteTs = newerWriteTs == null ? 0 : newerWriteTs;
@@ -576,10 +567,15 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
       // encounter conflict when prewriting by row
       LOG.warn("judgePrewriteConflict newerWriteTs:" + newerWriteTs + " existLock:" + new String(existLockBytes) + " family:"
               + Bytes.toString(family) + " qualifier:" + Bytes.toString(qualifier) + " lockExpired:" + lockExpired);
-      return new byte[][] { Bytes.toBytes(newerWriteTs), existLockBytes, family, qualifier,
-          Bytes.toBytes(lockExpired) };
+      ThemisPrewriteResult.Builder conflict = ThemisPrewriteResult.newBuilder();
+      conflict.setNewerWriteTs(newerWriteTs);
+      conflict.setExistLock(HBaseZeroCopyByteString.wrap(existLockBytes));
+      conflict.setLockExpired(lockExpired);
+      conflict.setQualifier(HBaseZeroCopyByteString.wrap(qualifier));
+      conflict.setFamily(HBaseZeroCopyByteString.wrap(family));
+      conflict.setRow(HBaseZeroCopyByteString.wrap(row));
+      return conflict.build();
     }
-    
     return null;
   }
 
