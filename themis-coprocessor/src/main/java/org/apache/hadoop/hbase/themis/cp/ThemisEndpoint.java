@@ -281,13 +281,13 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
   @Override
   public void prewriteRow(RpcController controller, ThemisPrewriteRequest request,
       RpcCallback<ThemisPrewriteResponse> callback) {
-    prewriteRow(controller, request, callback, false);
+    prewritePrimaryRow(controller, request, callback, false);
   }
 
   @Override
   public void prewriteSingleRow(RpcController controller, ThemisPrewriteRequest request,
       RpcCallback<ThemisPrewriteResponse> callback) {
-    prewriteRow(controller, request, callback, true);
+    prewritePrimaryRow(controller, request, callback, true);
   }
   
   @Override
@@ -303,7 +303,7 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
         return;
       }
 
-      List<Future<ThemisPrewriteResult>> list = new ArrayList<Future<ThemisPrewriteResult>>();
+      List<Future<ThemisPrewriteResult>> list = new ArrayList<>();
       for (ThemisPrewrite prewrite : prews) {
         if (!HRegion.rowIsInRange(env.getRegion().getRegionInfo(), prewrite.getRow().toByteArray())) {
           // row can transfer to other region, then client will try
@@ -313,11 +313,12 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
         }
 
         Future<ThemisPrewriteResult> f = batchPrewriteSecPool
-            .submit(new BatchPrewriteSecondaryTask(controller, prewrite));
+            .submit(new BatchPrewriteSecondaryTask(controller, prewrite, request.getPrewriteTs(),
+                    null, request.getSecondaryLock().toByteArray()));
         list.add(f);
       }
 
-      ThemisPrewriteResult r = null;
+      ThemisPrewriteResult r;
       for (Future<ThemisPrewriteResult> future : list) {
         try {
           r = future.get();
@@ -340,34 +341,47 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
   class BatchPrewriteSecondaryTask implements Callable<ThemisPrewriteResult> {
     private RpcController controller;
     private ThemisPrewrite prewrite;
+    private long prewriteTs;
+    private byte[] primaryLock;
+    private byte[] secondaryLock;
 
-    public BatchPrewriteSecondaryTask(RpcController controller, ThemisPrewrite prewrite) {
+    public BatchPrewriteSecondaryTask(RpcController controller, ThemisPrewrite prewrite,
+                                      long prewriteTs, byte[] primaryLock, byte[] secondaryLock) {
       this.controller = controller;
       this.prewrite = prewrite;
+      this.prewriteTs = prewriteTs;
+      this.primaryLock = primaryLock;
+      this.secondaryLock = secondaryLock;
     }
 
     public ThemisPrewriteResult call() throws Exception {
-      return prewriteRow(controller, prewrite, false);
+      return prewriteRow(controller, prewrite, prewriteTs, primaryLock, secondaryLock, -1 , false);
     }
   }
   
-  protected void prewriteRow(RpcController controller, ThemisPrewriteRequest request,
+  protected void prewritePrimaryRow(RpcController controller, ThemisPrewriteRequest request,
       RpcCallback<ThemisPrewriteResponse> callback, boolean isSingleRow) {
     ThemisPrewriteResponse.Builder builder = ThemisPrewriteResponse.newBuilder();
-    ThemisPrewriteResult result = prewriteRow(controller, request.getThemisPrewrite(), isSingleRow);
+    ThemisPrewriteResult result = prewriteRow(controller,
+            request.getThemisPrewrite(),
+            request.getPrewriteTs(),
+            request.getPrimaryLock().toByteArray(),
+            request.getSecondaryLock().toByteArray(), request.getPrimaryIndex(), isSingleRow);
     if (result != null) {
       builder.setThemisPrewriteResult(result);
     }
     callback.run(builder.build());
   }
-  
-  private ThemisPrewriteResult prewriteRow(RpcController controller, ThemisPrewrite prewrite, boolean isSingleRow) {
+
+  private ThemisPrewriteResult prewriteRow(RpcController controller, ThemisPrewrite prewrite,
+                                           long prewriteTs, byte[] primaryLock,
+                                           byte[] secondaryLock, int primaryIndex, boolean isSingleRow) {
     ThemisPrewriteResult conflict = null;
     try {
       conflict = prewriteRow(prewrite.getRow().toByteArray(),
-          ColumnMutation.toColumnMutations(prewrite.getMutationsList()), prewrite.getPrewriteTs(),
-          prewrite.getSecondaryLock().toByteArray(), prewrite.getPrimaryLock().toByteArray(),
-          prewrite.getPrimaryIndex(), isSingleRow);
+          ColumnMutation.toColumnMutations(prewrite.getMutationsList()), prewriteTs,
+          secondaryLock, primaryLock,
+          primaryIndex, isSingleRow);
     } catch (IOException e) {
       LOG.error("prewrite fail", e);
       ResponseConverter.setControllerException(controller, e);

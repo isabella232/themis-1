@@ -2431,46 +2431,6 @@ public final class ThemisProtos {
      */
     org.apache.hadoop.hbase.protobuf.generated.CellProtos.CellOrBuilder getMutationsOrBuilder(
         int index);
-
-    // required uint64 prewriteTs = 3;
-    /**
-     * <code>required uint64 prewriteTs = 3;</code>
-     */
-    boolean hasPrewriteTs();
-    /**
-     * <code>required uint64 prewriteTs = 3;</code>
-     */
-    long getPrewriteTs();
-
-    // required bytes secondaryLock = 4;
-    /**
-     * <code>required bytes secondaryLock = 4;</code>
-     */
-    boolean hasSecondaryLock();
-    /**
-     * <code>required bytes secondaryLock = 4;</code>
-     */
-    com.google.protobuf.ByteString getSecondaryLock();
-
-    // required bytes primaryLock = 5;
-    /**
-     * <code>required bytes primaryLock = 5;</code>
-     */
-    boolean hasPrimaryLock();
-    /**
-     * <code>required bytes primaryLock = 5;</code>
-     */
-    com.google.protobuf.ByteString getPrimaryLock();
-
-    // required int32 primaryIndex = 6;
-    /**
-     * <code>required int32 primaryIndex = 6;</code>
-     */
-    boolean hasPrimaryIndex();
-    /**
-     * <code>required int32 primaryIndex = 6;</code>
-     */
-    int getPrimaryIndex();
   }
   /**
    * Protobuf type {@code ThemisPrewrite}
@@ -2534,26 +2494,6 @@ public final class ThemisProtos {
                 mutable_bitField0_ |= 0x00000002;
               }
               mutations_.add(input.readMessage(org.apache.hadoop.hbase.protobuf.generated.CellProtos.Cell.PARSER, extensionRegistry));
-              break;
-            }
-            case 24: {
-              bitField0_ |= 0x00000002;
-              prewriteTs_ = input.readUInt64();
-              break;
-            }
-            case 34: {
-              bitField0_ |= 0x00000004;
-              secondaryLock_ = input.readBytes();
-              break;
-            }
-            case 42: {
-              bitField0_ |= 0x00000008;
-              primaryLock_ = input.readBytes();
-              break;
-            }
-            case 48: {
-              bitField0_ |= 0x00000010;
-              primaryIndex_ = input.readInt32();
               break;
             }
           }
@@ -2651,77 +2591,9 @@ public final class ThemisProtos {
       return mutations_.get(index);
     }
 
-    // required uint64 prewriteTs = 3;
-    public static final int PREWRITETS_FIELD_NUMBER = 3;
-    private long prewriteTs_;
-    /**
-     * <code>required uint64 prewriteTs = 3;</code>
-     */
-    public boolean hasPrewriteTs() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    /**
-     * <code>required uint64 prewriteTs = 3;</code>
-     */
-    public long getPrewriteTs() {
-      return prewriteTs_;
-    }
-
-    // required bytes secondaryLock = 4;
-    public static final int SECONDARYLOCK_FIELD_NUMBER = 4;
-    private com.google.protobuf.ByteString secondaryLock_;
-    /**
-     * <code>required bytes secondaryLock = 4;</code>
-     */
-    public boolean hasSecondaryLock() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    /**
-     * <code>required bytes secondaryLock = 4;</code>
-     */
-    public com.google.protobuf.ByteString getSecondaryLock() {
-      return secondaryLock_;
-    }
-
-    // required bytes primaryLock = 5;
-    public static final int PRIMARYLOCK_FIELD_NUMBER = 5;
-    private com.google.protobuf.ByteString primaryLock_;
-    /**
-     * <code>required bytes primaryLock = 5;</code>
-     */
-    public boolean hasPrimaryLock() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
-    }
-    /**
-     * <code>required bytes primaryLock = 5;</code>
-     */
-    public com.google.protobuf.ByteString getPrimaryLock() {
-      return primaryLock_;
-    }
-
-    // required int32 primaryIndex = 6;
-    public static final int PRIMARYINDEX_FIELD_NUMBER = 6;
-    private int primaryIndex_;
-    /**
-     * <code>required int32 primaryIndex = 6;</code>
-     */
-    public boolean hasPrimaryIndex() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
-    }
-    /**
-     * <code>required int32 primaryIndex = 6;</code>
-     */
-    public int getPrimaryIndex() {
-      return primaryIndex_;
-    }
-
     private void initFields() {
       row_ = com.google.protobuf.ByteString.EMPTY;
       mutations_ = java.util.Collections.emptyList();
-      prewriteTs_ = 0L;
-      secondaryLock_ = com.google.protobuf.ByteString.EMPTY;
-      primaryLock_ = com.google.protobuf.ByteString.EMPTY;
-      primaryIndex_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -2729,22 +2601,6 @@ public final class ThemisProtos {
       if (isInitialized != -1) return isInitialized == 1;
 
       if (!hasRow()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasPrewriteTs()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasSecondaryLock()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasPrimaryLock()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasPrimaryIndex()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -2760,18 +2616,6 @@ public final class ThemisProtos {
       }
       for (int i = 0; i < mutations_.size(); i++) {
         output.writeMessage(2, mutations_.get(i));
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeUInt64(3, prewriteTs_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeBytes(4, secondaryLock_);
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeBytes(5, primaryLock_);
-      }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeInt32(6, primaryIndex_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -2789,22 +2633,6 @@ public final class ThemisProtos {
       for (int i = 0; i < mutations_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, mutations_.get(i));
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(3, prewriteTs_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, secondaryLock_);
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(5, primaryLock_);
-      }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(6, primaryIndex_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2836,26 +2664,6 @@ public final class ThemisProtos {
       }
       result = result && getMutationsList()
           .equals(other.getMutationsList());
-      result = result && (hasPrewriteTs() == other.hasPrewriteTs());
-      if (hasPrewriteTs()) {
-        result = result && (getPrewriteTs()
-            == other.getPrewriteTs());
-      }
-      result = result && (hasSecondaryLock() == other.hasSecondaryLock());
-      if (hasSecondaryLock()) {
-        result = result && getSecondaryLock()
-            .equals(other.getSecondaryLock());
-      }
-      result = result && (hasPrimaryLock() == other.hasPrimaryLock());
-      if (hasPrimaryLock()) {
-        result = result && getPrimaryLock()
-            .equals(other.getPrimaryLock());
-      }
-      result = result && (hasPrimaryIndex() == other.hasPrimaryIndex());
-      if (hasPrimaryIndex()) {
-        result = result && (getPrimaryIndex()
-            == other.getPrimaryIndex());
-      }
       result = result &&
           getUnknownFields().equals(other.getUnknownFields());
       return result;
@@ -2876,22 +2684,6 @@ public final class ThemisProtos {
       if (getMutationsCount() > 0) {
         hash = (37 * hash) + MUTATIONS_FIELD_NUMBER;
         hash = (53 * hash) + getMutationsList().hashCode();
-      }
-      if (hasPrewriteTs()) {
-        hash = (37 * hash) + PREWRITETS_FIELD_NUMBER;
-        hash = (53 * hash) + hashLong(getPrewriteTs());
-      }
-      if (hasSecondaryLock()) {
-        hash = (37 * hash) + SECONDARYLOCK_FIELD_NUMBER;
-        hash = (53 * hash) + getSecondaryLock().hashCode();
-      }
-      if (hasPrimaryLock()) {
-        hash = (37 * hash) + PRIMARYLOCK_FIELD_NUMBER;
-        hash = (53 * hash) + getPrimaryLock().hashCode();
-      }
-      if (hasPrimaryIndex()) {
-        hash = (37 * hash) + PRIMARYINDEX_FIELD_NUMBER;
-        hash = (53 * hash) + getPrimaryIndex();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
@@ -3011,14 +2803,6 @@ public final class ThemisProtos {
         } else {
           mutationsBuilder_.clear();
         }
-        prewriteTs_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000004);
-        secondaryLock_ = com.google.protobuf.ByteString.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000008);
-        primaryLock_ = com.google.protobuf.ByteString.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000010);
-        primaryIndex_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -3060,22 +2844,6 @@ public final class ThemisProtos {
         } else {
           result.mutations_ = mutationsBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.prewriteTs_ = prewriteTs_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.secondaryLock_ = secondaryLock_;
-        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
-          to_bitField0_ |= 0x00000008;
-        }
-        result.primaryLock_ = primaryLock_;
-        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
-          to_bitField0_ |= 0x00000010;
-        }
-        result.primaryIndex_ = primaryIndex_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -3121,40 +2889,12 @@ public final class ThemisProtos {
             }
           }
         }
-        if (other.hasPrewriteTs()) {
-          setPrewriteTs(other.getPrewriteTs());
-        }
-        if (other.hasSecondaryLock()) {
-          setSecondaryLock(other.getSecondaryLock());
-        }
-        if (other.hasPrimaryLock()) {
-          setPrimaryLock(other.getPrimaryLock());
-        }
-        if (other.hasPrimaryIndex()) {
-          setPrimaryIndex(other.getPrimaryIndex());
-        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
 
       public final boolean isInitialized() {
         if (!hasRow()) {
-          
-          return false;
-        }
-        if (!hasPrewriteTs()) {
-          
-          return false;
-        }
-        if (!hasSecondaryLock()) {
-          
-          return false;
-        }
-        if (!hasPrimaryLock()) {
-          
-          return false;
-        }
-        if (!hasPrimaryIndex()) {
           
           return false;
         }
@@ -3456,144 +3196,6 @@ public final class ThemisProtos {
         return mutationsBuilder_;
       }
 
-      // required uint64 prewriteTs = 3;
-      private long prewriteTs_ ;
-      /**
-       * <code>required uint64 prewriteTs = 3;</code>
-       */
-      public boolean hasPrewriteTs() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      /**
-       * <code>required uint64 prewriteTs = 3;</code>
-       */
-      public long getPrewriteTs() {
-        return prewriteTs_;
-      }
-      /**
-       * <code>required uint64 prewriteTs = 3;</code>
-       */
-      public Builder setPrewriteTs(long value) {
-        bitField0_ |= 0x00000004;
-        prewriteTs_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required uint64 prewriteTs = 3;</code>
-       */
-      public Builder clearPrewriteTs() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        prewriteTs_ = 0L;
-        onChanged();
-        return this;
-      }
-
-      // required bytes secondaryLock = 4;
-      private com.google.protobuf.ByteString secondaryLock_ = com.google.protobuf.ByteString.EMPTY;
-      /**
-       * <code>required bytes secondaryLock = 4;</code>
-       */
-      public boolean hasSecondaryLock() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
-      }
-      /**
-       * <code>required bytes secondaryLock = 4;</code>
-       */
-      public com.google.protobuf.ByteString getSecondaryLock() {
-        return secondaryLock_;
-      }
-      /**
-       * <code>required bytes secondaryLock = 4;</code>
-       */
-      public Builder setSecondaryLock(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
-        secondaryLock_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required bytes secondaryLock = 4;</code>
-       */
-      public Builder clearSecondaryLock() {
-        bitField0_ = (bitField0_ & ~0x00000008);
-        secondaryLock_ = getDefaultInstance().getSecondaryLock();
-        onChanged();
-        return this;
-      }
-
-      // required bytes primaryLock = 5;
-      private com.google.protobuf.ByteString primaryLock_ = com.google.protobuf.ByteString.EMPTY;
-      /**
-       * <code>required bytes primaryLock = 5;</code>
-       */
-      public boolean hasPrimaryLock() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
-      }
-      /**
-       * <code>required bytes primaryLock = 5;</code>
-       */
-      public com.google.protobuf.ByteString getPrimaryLock() {
-        return primaryLock_;
-      }
-      /**
-       * <code>required bytes primaryLock = 5;</code>
-       */
-      public Builder setPrimaryLock(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000010;
-        primaryLock_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required bytes primaryLock = 5;</code>
-       */
-      public Builder clearPrimaryLock() {
-        bitField0_ = (bitField0_ & ~0x00000010);
-        primaryLock_ = getDefaultInstance().getPrimaryLock();
-        onChanged();
-        return this;
-      }
-
-      // required int32 primaryIndex = 6;
-      private int primaryIndex_ ;
-      /**
-       * <code>required int32 primaryIndex = 6;</code>
-       */
-      public boolean hasPrimaryIndex() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
-      }
-      /**
-       * <code>required int32 primaryIndex = 6;</code>
-       */
-      public int getPrimaryIndex() {
-        return primaryIndex_;
-      }
-      /**
-       * <code>required int32 primaryIndex = 6;</code>
-       */
-      public Builder setPrimaryIndex(int value) {
-        bitField0_ |= 0x00000020;
-        primaryIndex_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required int32 primaryIndex = 6;</code>
-       */
-      public Builder clearPrimaryIndex() {
-        bitField0_ = (bitField0_ & ~0x00000020);
-        primaryIndex_ = 0;
-        onChanged();
-        return this;
-      }
-
       // @@protoc_insertion_point(builder_scope:ThemisPrewrite)
     }
 
@@ -3621,6 +3223,46 @@ public final class ThemisProtos {
      * <code>required .ThemisPrewrite themisPrewrite = 1;</code>
      */
     org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.ThemisPrewriteOrBuilder getThemisPrewriteOrBuilder();
+
+    // required uint64 prewriteTs = 2;
+    /**
+     * <code>required uint64 prewriteTs = 2;</code>
+     */
+    boolean hasPrewriteTs();
+    /**
+     * <code>required uint64 prewriteTs = 2;</code>
+     */
+    long getPrewriteTs();
+
+    // required bytes secondaryLock = 3;
+    /**
+     * <code>required bytes secondaryLock = 3;</code>
+     */
+    boolean hasSecondaryLock();
+    /**
+     * <code>required bytes secondaryLock = 3;</code>
+     */
+    com.google.protobuf.ByteString getSecondaryLock();
+
+    // required bytes primaryLock = 4;
+    /**
+     * <code>required bytes primaryLock = 4;</code>
+     */
+    boolean hasPrimaryLock();
+    /**
+     * <code>required bytes primaryLock = 4;</code>
+     */
+    com.google.protobuf.ByteString getPrimaryLock();
+
+    // required int32 primaryIndex = 5;
+    /**
+     * <code>required int32 primaryIndex = 5;</code>
+     */
+    boolean hasPrimaryIndex();
+    /**
+     * <code>required int32 primaryIndex = 5;</code>
+     */
+    int getPrimaryIndex();
   }
   /**
    * Protobuf type {@code ThemisPrewriteRequest}
@@ -3686,6 +3328,26 @@ public final class ThemisProtos {
               bitField0_ |= 0x00000001;
               break;
             }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              prewriteTs_ = input.readUInt64();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
+              secondaryLock_ = input.readBytes();
+              break;
+            }
+            case 34: {
+              bitField0_ |= 0x00000008;
+              primaryLock_ = input.readBytes();
+              break;
+            }
+            case 40: {
+              bitField0_ |= 0x00000010;
+              primaryIndex_ = input.readInt32();
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -3748,8 +3410,76 @@ public final class ThemisProtos {
       return themisPrewrite_;
     }
 
+    // required uint64 prewriteTs = 2;
+    public static final int PREWRITETS_FIELD_NUMBER = 2;
+    private long prewriteTs_;
+    /**
+     * <code>required uint64 prewriteTs = 2;</code>
+     */
+    public boolean hasPrewriteTs() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required uint64 prewriteTs = 2;</code>
+     */
+    public long getPrewriteTs() {
+      return prewriteTs_;
+    }
+
+    // required bytes secondaryLock = 3;
+    public static final int SECONDARYLOCK_FIELD_NUMBER = 3;
+    private com.google.protobuf.ByteString secondaryLock_;
+    /**
+     * <code>required bytes secondaryLock = 3;</code>
+     */
+    public boolean hasSecondaryLock() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required bytes secondaryLock = 3;</code>
+     */
+    public com.google.protobuf.ByteString getSecondaryLock() {
+      return secondaryLock_;
+    }
+
+    // required bytes primaryLock = 4;
+    public static final int PRIMARYLOCK_FIELD_NUMBER = 4;
+    private com.google.protobuf.ByteString primaryLock_;
+    /**
+     * <code>required bytes primaryLock = 4;</code>
+     */
+    public boolean hasPrimaryLock() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>required bytes primaryLock = 4;</code>
+     */
+    public com.google.protobuf.ByteString getPrimaryLock() {
+      return primaryLock_;
+    }
+
+    // required int32 primaryIndex = 5;
+    public static final int PRIMARYINDEX_FIELD_NUMBER = 5;
+    private int primaryIndex_;
+    /**
+     * <code>required int32 primaryIndex = 5;</code>
+     */
+    public boolean hasPrimaryIndex() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>required int32 primaryIndex = 5;</code>
+     */
+    public int getPrimaryIndex() {
+      return primaryIndex_;
+    }
+
     private void initFields() {
       themisPrewrite_ = org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.ThemisPrewrite.getDefaultInstance();
+      prewriteTs_ = 0L;
+      secondaryLock_ = com.google.protobuf.ByteString.EMPTY;
+      primaryLock_ = com.google.protobuf.ByteString.EMPTY;
+      primaryIndex_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -3757,6 +3487,22 @@ public final class ThemisProtos {
       if (isInitialized != -1) return isInitialized == 1;
 
       if (!hasThemisPrewrite()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasPrewriteTs()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasSecondaryLock()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasPrimaryLock()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasPrimaryIndex()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -3774,6 +3520,18 @@ public final class ThemisProtos {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeMessage(1, themisPrewrite_);
       }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt64(2, prewriteTs_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, secondaryLock_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBytes(4, primaryLock_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeInt32(5, primaryIndex_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -3786,6 +3544,22 @@ public final class ThemisProtos {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, themisPrewrite_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(2, prewriteTs_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, secondaryLock_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(4, primaryLock_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(5, primaryIndex_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3815,6 +3589,26 @@ public final class ThemisProtos {
         result = result && getThemisPrewrite()
             .equals(other.getThemisPrewrite());
       }
+      result = result && (hasPrewriteTs() == other.hasPrewriteTs());
+      if (hasPrewriteTs()) {
+        result = result && (getPrewriteTs()
+            == other.getPrewriteTs());
+      }
+      result = result && (hasSecondaryLock() == other.hasSecondaryLock());
+      if (hasSecondaryLock()) {
+        result = result && getSecondaryLock()
+            .equals(other.getSecondaryLock());
+      }
+      result = result && (hasPrimaryLock() == other.hasPrimaryLock());
+      if (hasPrimaryLock()) {
+        result = result && getPrimaryLock()
+            .equals(other.getPrimaryLock());
+      }
+      result = result && (hasPrimaryIndex() == other.hasPrimaryIndex());
+      if (hasPrimaryIndex()) {
+        result = result && (getPrimaryIndex()
+            == other.getPrimaryIndex());
+      }
       result = result &&
           getUnknownFields().equals(other.getUnknownFields());
       return result;
@@ -3831,6 +3625,22 @@ public final class ThemisProtos {
       if (hasThemisPrewrite()) {
         hash = (37 * hash) + THEMISPREWRITE_FIELD_NUMBER;
         hash = (53 * hash) + getThemisPrewrite().hashCode();
+      }
+      if (hasPrewriteTs()) {
+        hash = (37 * hash) + PREWRITETS_FIELD_NUMBER;
+        hash = (53 * hash) + hashLong(getPrewriteTs());
+      }
+      if (hasSecondaryLock()) {
+        hash = (37 * hash) + SECONDARYLOCK_FIELD_NUMBER;
+        hash = (53 * hash) + getSecondaryLock().hashCode();
+      }
+      if (hasPrimaryLock()) {
+        hash = (37 * hash) + PRIMARYLOCK_FIELD_NUMBER;
+        hash = (53 * hash) + getPrimaryLock().hashCode();
+      }
+      if (hasPrimaryIndex()) {
+        hash = (37 * hash) + PRIMARYINDEX_FIELD_NUMBER;
+        hash = (53 * hash) + getPrimaryIndex();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
@@ -3948,6 +3758,14 @@ public final class ThemisProtos {
           themisPrewriteBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000001);
+        prewriteTs_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        secondaryLock_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        primaryLock_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        primaryIndex_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
@@ -3984,6 +3802,22 @@ public final class ThemisProtos {
         } else {
           result.themisPrewrite_ = themisPrewriteBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.prewriteTs_ = prewriteTs_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.secondaryLock_ = secondaryLock_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.primaryLock_ = primaryLock_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.primaryIndex_ = primaryIndex_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -4003,12 +3837,40 @@ public final class ThemisProtos {
         if (other.hasThemisPrewrite()) {
           mergeThemisPrewrite(other.getThemisPrewrite());
         }
+        if (other.hasPrewriteTs()) {
+          setPrewriteTs(other.getPrewriteTs());
+        }
+        if (other.hasSecondaryLock()) {
+          setSecondaryLock(other.getSecondaryLock());
+        }
+        if (other.hasPrimaryLock()) {
+          setPrimaryLock(other.getPrimaryLock());
+        }
+        if (other.hasPrimaryIndex()) {
+          setPrimaryIndex(other.getPrimaryIndex());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
 
       public final boolean isInitialized() {
         if (!hasThemisPrewrite()) {
+          
+          return false;
+        }
+        if (!hasPrewriteTs()) {
+          
+          return false;
+        }
+        if (!hasSecondaryLock()) {
+          
+          return false;
+        }
+        if (!hasPrimaryLock()) {
+          
+          return false;
+        }
+        if (!hasPrimaryIndex()) {
           
           return false;
         }
@@ -4153,6 +4015,144 @@ public final class ThemisProtos {
           themisPrewrite_ = null;
         }
         return themisPrewriteBuilder_;
+      }
+
+      // required uint64 prewriteTs = 2;
+      private long prewriteTs_ ;
+      /**
+       * <code>required uint64 prewriteTs = 2;</code>
+       */
+      public boolean hasPrewriteTs() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required uint64 prewriteTs = 2;</code>
+       */
+      public long getPrewriteTs() {
+        return prewriteTs_;
+      }
+      /**
+       * <code>required uint64 prewriteTs = 2;</code>
+       */
+      public Builder setPrewriteTs(long value) {
+        bitField0_ |= 0x00000002;
+        prewriteTs_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint64 prewriteTs = 2;</code>
+       */
+      public Builder clearPrewriteTs() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        prewriteTs_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // required bytes secondaryLock = 3;
+      private com.google.protobuf.ByteString secondaryLock_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>required bytes secondaryLock = 3;</code>
+       */
+      public boolean hasSecondaryLock() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required bytes secondaryLock = 3;</code>
+       */
+      public com.google.protobuf.ByteString getSecondaryLock() {
+        return secondaryLock_;
+      }
+      /**
+       * <code>required bytes secondaryLock = 3;</code>
+       */
+      public Builder setSecondaryLock(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        secondaryLock_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required bytes secondaryLock = 3;</code>
+       */
+      public Builder clearSecondaryLock() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        secondaryLock_ = getDefaultInstance().getSecondaryLock();
+        onChanged();
+        return this;
+      }
+
+      // required bytes primaryLock = 4;
+      private com.google.protobuf.ByteString primaryLock_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>required bytes primaryLock = 4;</code>
+       */
+      public boolean hasPrimaryLock() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>required bytes primaryLock = 4;</code>
+       */
+      public com.google.protobuf.ByteString getPrimaryLock() {
+        return primaryLock_;
+      }
+      /**
+       * <code>required bytes primaryLock = 4;</code>
+       */
+      public Builder setPrimaryLock(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        primaryLock_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required bytes primaryLock = 4;</code>
+       */
+      public Builder clearPrimaryLock() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        primaryLock_ = getDefaultInstance().getPrimaryLock();
+        onChanged();
+        return this;
+      }
+
+      // required int32 primaryIndex = 5;
+      private int primaryIndex_ ;
+      /**
+       * <code>required int32 primaryIndex = 5;</code>
+       */
+      public boolean hasPrimaryIndex() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>required int32 primaryIndex = 5;</code>
+       */
+      public int getPrimaryIndex() {
+        return primaryIndex_;
+      }
+      /**
+       * <code>required int32 primaryIndex = 5;</code>
+       */
+      public Builder setPrimaryIndex(int value) {
+        bitField0_ |= 0x00000010;
+        primaryIndex_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int32 primaryIndex = 5;</code>
+       */
+      public Builder clearPrimaryIndex() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        primaryIndex_ = 0;
+        onChanged();
+        return this;
       }
 
       // @@protoc_insertion_point(builder_scope:ThemisPrewriteRequest)
@@ -4750,6 +4750,26 @@ public final class ThemisProtos {
      */
     org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.ThemisPrewriteOrBuilder getThemisPrewriteOrBuilder(
         int index);
+
+    // required uint64 prewriteTs = 2;
+    /**
+     * <code>required uint64 prewriteTs = 2;</code>
+     */
+    boolean hasPrewriteTs();
+    /**
+     * <code>required uint64 prewriteTs = 2;</code>
+     */
+    long getPrewriteTs();
+
+    // required bytes secondaryLock = 3;
+    /**
+     * <code>required bytes secondaryLock = 3;</code>
+     */
+    boolean hasSecondaryLock();
+    /**
+     * <code>required bytes secondaryLock = 3;</code>
+     */
+    com.google.protobuf.ByteString getSecondaryLock();
   }
   /**
    * Protobuf type {@code ThemisBatchPrewriteSecondaryRequest}
@@ -4810,6 +4830,16 @@ public final class ThemisProtos {
               themisPrewrite_.add(input.readMessage(org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.ThemisPrewrite.PARSER, extensionRegistry));
               break;
             }
+            case 16: {
+              bitField0_ |= 0x00000001;
+              prewriteTs_ = input.readUInt64();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000002;
+              secondaryLock_ = input.readBytes();
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -4852,6 +4882,7 @@ public final class ThemisProtos {
       return PARSER;
     }
 
+    private int bitField0_;
     // repeated .ThemisPrewrite themisPrewrite = 1;
     public static final int THEMISPREWRITE_FIELD_NUMBER = 1;
     private java.util.List<org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.ThemisPrewrite> themisPrewrite_;
@@ -4888,14 +4919,56 @@ public final class ThemisProtos {
       return themisPrewrite_.get(index);
     }
 
+    // required uint64 prewriteTs = 2;
+    public static final int PREWRITETS_FIELD_NUMBER = 2;
+    private long prewriteTs_;
+    /**
+     * <code>required uint64 prewriteTs = 2;</code>
+     */
+    public boolean hasPrewriteTs() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required uint64 prewriteTs = 2;</code>
+     */
+    public long getPrewriteTs() {
+      return prewriteTs_;
+    }
+
+    // required bytes secondaryLock = 3;
+    public static final int SECONDARYLOCK_FIELD_NUMBER = 3;
+    private com.google.protobuf.ByteString secondaryLock_;
+    /**
+     * <code>required bytes secondaryLock = 3;</code>
+     */
+    public boolean hasSecondaryLock() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required bytes secondaryLock = 3;</code>
+     */
+    public com.google.protobuf.ByteString getSecondaryLock() {
+      return secondaryLock_;
+    }
+
     private void initFields() {
       themisPrewrite_ = java.util.Collections.emptyList();
+      prewriteTs_ = 0L;
+      secondaryLock_ = com.google.protobuf.ByteString.EMPTY;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
 
+      if (!hasPrewriteTs()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasSecondaryLock()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       for (int i = 0; i < getThemisPrewriteCount(); i++) {
         if (!getThemisPrewrite(i).isInitialized()) {
           memoizedIsInitialized = 0;
@@ -4912,6 +4985,12 @@ public final class ThemisProtos {
       for (int i = 0; i < themisPrewrite_.size(); i++) {
         output.writeMessage(1, themisPrewrite_.get(i));
       }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeUInt64(2, prewriteTs_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(3, secondaryLock_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -4924,6 +5003,14 @@ public final class ThemisProtos {
       for (int i = 0; i < themisPrewrite_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, themisPrewrite_.get(i));
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(2, prewriteTs_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, secondaryLock_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -4950,6 +5037,16 @@ public final class ThemisProtos {
       boolean result = true;
       result = result && getThemisPrewriteList()
           .equals(other.getThemisPrewriteList());
+      result = result && (hasPrewriteTs() == other.hasPrewriteTs());
+      if (hasPrewriteTs()) {
+        result = result && (getPrewriteTs()
+            == other.getPrewriteTs());
+      }
+      result = result && (hasSecondaryLock() == other.hasSecondaryLock());
+      if (hasSecondaryLock()) {
+        result = result && getSecondaryLock()
+            .equals(other.getSecondaryLock());
+      }
       result = result &&
           getUnknownFields().equals(other.getUnknownFields());
       return result;
@@ -4966,6 +5063,14 @@ public final class ThemisProtos {
       if (getThemisPrewriteCount() > 0) {
         hash = (37 * hash) + THEMISPREWRITE_FIELD_NUMBER;
         hash = (53 * hash) + getThemisPrewriteList().hashCode();
+      }
+      if (hasPrewriteTs()) {
+        hash = (37 * hash) + PREWRITETS_FIELD_NUMBER;
+        hash = (53 * hash) + hashLong(getPrewriteTs());
+      }
+      if (hasSecondaryLock()) {
+        hash = (37 * hash) + SECONDARYLOCK_FIELD_NUMBER;
+        hash = (53 * hash) + getSecondaryLock().hashCode();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
@@ -5083,6 +5188,10 @@ public final class ThemisProtos {
         } else {
           themisPrewriteBuilder_.clear();
         }
+        prewriteTs_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        secondaryLock_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -5110,6 +5219,7 @@ public final class ThemisProtos {
       public org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.ThemisBatchPrewriteSecondaryRequest buildPartial() {
         org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.ThemisBatchPrewriteSecondaryRequest result = new org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.ThemisBatchPrewriteSecondaryRequest(this);
         int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
         if (themisPrewriteBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001)) {
             themisPrewrite_ = java.util.Collections.unmodifiableList(themisPrewrite_);
@@ -5119,6 +5229,15 @@ public final class ThemisProtos {
         } else {
           result.themisPrewrite_ = themisPrewriteBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.prewriteTs_ = prewriteTs_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.secondaryLock_ = secondaryLock_;
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -5160,11 +5279,25 @@ public final class ThemisProtos {
             }
           }
         }
+        if (other.hasPrewriteTs()) {
+          setPrewriteTs(other.getPrewriteTs());
+        }
+        if (other.hasSecondaryLock()) {
+          setSecondaryLock(other.getSecondaryLock());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
 
       public final boolean isInitialized() {
+        if (!hasPrewriteTs()) {
+          
+          return false;
+        }
+        if (!hasSecondaryLock()) {
+          
+          return false;
+        }
         for (int i = 0; i < getThemisPrewriteCount(); i++) {
           if (!getThemisPrewrite(i).isInitialized()) {
             
@@ -5431,6 +5564,75 @@ public final class ThemisProtos {
           themisPrewrite_ = null;
         }
         return themisPrewriteBuilder_;
+      }
+
+      // required uint64 prewriteTs = 2;
+      private long prewriteTs_ ;
+      /**
+       * <code>required uint64 prewriteTs = 2;</code>
+       */
+      public boolean hasPrewriteTs() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required uint64 prewriteTs = 2;</code>
+       */
+      public long getPrewriteTs() {
+        return prewriteTs_;
+      }
+      /**
+       * <code>required uint64 prewriteTs = 2;</code>
+       */
+      public Builder setPrewriteTs(long value) {
+        bitField0_ |= 0x00000002;
+        prewriteTs_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint64 prewriteTs = 2;</code>
+       */
+      public Builder clearPrewriteTs() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        prewriteTs_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // required bytes secondaryLock = 3;
+      private com.google.protobuf.ByteString secondaryLock_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>required bytes secondaryLock = 3;</code>
+       */
+      public boolean hasSecondaryLock() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required bytes secondaryLock = 3;</code>
+       */
+      public com.google.protobuf.ByteString getSecondaryLock() {
+        return secondaryLock_;
+      }
+      /**
+       * <code>required bytes secondaryLock = 3;</code>
+       */
+      public Builder setSecondaryLock(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        secondaryLock_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required bytes secondaryLock = 3;</code>
+       */
+      public Builder clearSecondaryLock() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        secondaryLock_ = getDefaultInstance().getSecondaryLock();
+        onChanged();
+        return this;
       }
 
       // @@protoc_insertion_point(builder_scope:ThemisBatchPrewriteSecondaryRequest)
@@ -14407,58 +14609,59 @@ public final class ThemisProtos {
       "ThemisBatchGetRequest\022\022\n\004gets\030\001 \003(\0132\004.Ge" +
       "t\022\017\n\007startTs\030\002 \002(\004\022\022\n\nignoreLock\030\003 \002(\010\"-" +
       "\n\026ThemisBatchGetResponse\022\023\n\002rs\030\001 \003(\0132\007.R" +
-      "esult\"\215\001\n\016ThemisPrewrite\022\013\n\003row\030\001 \002(\014\022\030\n" +
-      "\tmutations\030\002 \003(\0132\005.Cell\022\022\n\nprewriteTs\030\003 " +
-      "\002(\004\022\025\n\rsecondaryLock\030\004 \002(\014\022\023\n\013primaryLoc" +
-      "k\030\005 \002(\014\022\024\n\014primaryIndex\030\006 \002(\005\"@\n\025ThemisP",
-      "rewriteRequest\022\'\n\016themisPrewrite\030\001 \002(\0132\017" +
-      ".ThemisPrewrite\"M\n\026ThemisPrewriteRespons" +
+      "esult\"7\n\016ThemisPrewrite\022\013\n\003row\030\001 \002(\014\022\030\n\t" +
+      "mutations\030\002 \003(\0132\005.Cell\"\226\001\n\025ThemisPrewrit" +
+      "eRequest\022\'\n\016themisPrewrite\030\001 \002(\0132\017.Themi" +
+      "sPrewrite\022\022\n\nprewriteTs\030\002 \002(\004\022\025\n\rseconda",
+      "ryLock\030\003 \002(\014\022\023\n\013primaryLock\030\004 \002(\014\022\024\n\014pri" +
+      "maryIndex\030\005 \002(\005\"M\n\026ThemisPrewriteRespons" +
       "e\0223\n\024themisPrewriteResult\030\001 \001(\0132\025.Themis" +
-      "PrewriteResult\"N\n#ThemisBatchPrewriteSec" +
+      "PrewriteResult\"y\n#ThemisBatchPrewriteSec" +
       "ondaryRequest\022\'\n\016themisPrewrite\030\001 \003(\0132\017." +
-      "ThemisPrewrite\"t\n$ThemisBatchPrewriteSec" +
-      "ondaryResponse\0223\n\024themisPrewriteResult\030\001" +
-      " \003(\0132\025.ThemisPrewriteResult\022\027\n\017rowsNotIn" +
-      "Region\030\002 \003(\014\"\204\001\n\024ThemisPrewriteResult\022\024\n" +
-      "\014newerWriteTs\030\001 \002(\003\022\021\n\texistLock\030\002 \002(\014\022\016",
-      "\n\006family\030\003 \002(\014\022\021\n\tqualifier\030\004 \002(\014\022\023\n\013loc" +
-      "kExpired\030\005 \002(\010\022\013\n\003row\030\006 \002(\014\":\n\023ThemisCom" +
-      "mitRequest\022#\n\014themisCommit\030\001 \002(\0132\r.Themi" +
-      "sCommit\"&\n\024ThemisCommitResponse\022\016\n\006resul" +
-      "t\030\001 \002(\010\"H\n!ThemisBatchCommitSecondaryReq" +
-      "uest\022#\n\014themisCommit\030\001 \003(\0132\r.ThemisCommi" +
-      "t\"k\n\"ThemisBatchCommitSecondaryResponse\022" +
-      "E\n\032batchCommitSecondaryResult\030\001 \003(\0132!.Th" +
-      "emisBatchCommitSecondaryResult\"@\n Themis" +
-      "BatchCommitSecondaryResult\022\013\n\003row\030\001 \002(\014\022",
-      "\017\n\007success\030\002 \002(\010\"q\n\014ThemisCommit\022\013\n\003row\030" +
-      "\001 \002(\014\022\030\n\tmutations\030\002 \003(\0132\005.Cell\022\022\n\nprewr" +
-      "iteTs\030\003 \002(\004\022\020\n\010commitTs\030\004 \002(\004\022\024\n\014primary" +
-      "Index\030\005 \002(\005\"V\n\020EraseLockRequest\022\013\n\003row\030\001" +
-      " \002(\014\022\016\n\006family\030\002 \002(\014\022\021\n\tqualifier\030\003 \002(\014\022" +
-      "\022\n\nprewriteTs\030\004 \002(\004\"!\n\021EraseLockResponse" +
-      "\022\014\n\004lock\030\001 \001(\014\"\'\n\022LockExpiredRequest\022\021\n\t" +
-      "timestamp\030\001 \002(\004\"&\n\023LockExpiredResponse\022\017" +
-      "\n\007expired\030\001 \002(\0102\301\005\n\rThemisService\022A\n\016the" +
-      "misBatchGet\022\026.ThemisBatchGetRequest\032\027.Th",
-      "emisBatchGetResponse\022\'\n\tthemisGet\022\021.Them" +
-      "isGetRequest\032\007.Result\022>\n\013prewriteRow\022\026.T" +
-      "hemisPrewriteRequest\032\027.ThemisPrewriteRes" +
-      "ponse\022i\n\032batchPrewriteSecondaryRows\022$.Th" +
-      "emisBatchPrewriteSecondaryRequest\032%.Them" +
-      "isBatchPrewriteSecondaryResponse\022D\n\021prew" +
-      "riteSingleRow\022\026.ThemisPrewriteRequest\032\027." +
-      "ThemisPrewriteResponse\0228\n\tcommitRow\022\024.Th" +
-      "emisCommitRequest\032\025.ThemisCommitResponse" +
-      "\022c\n\030batchCommitSecondaryRows\022\".ThemisBat",
-      "chCommitSecondaryRequest\032#.ThemisBatchCo" +
-      "mmitSecondaryResponse\022>\n\017commitSingleRow" +
-      "\022\024.ThemisCommitRequest\032\025.ThemisCommitRes" +
-      "ponse\0228\n\017getLockAndErase\022\021.EraseLockRequ" +
-      "est\032\022.EraseLockResponse\022:\n\risLockExpired" +
-      "\022\023.LockExpiredRequest\032\024.LockExpiredRespo" +
-      "nseBC\n+org.apache.hadoop.hbase.themis.cp" +
-      ".generatedB\014ThemisProtosH\001\210\001\001\240\001\001"
+      "ThemisPrewrite\022\022\n\nprewriteTs\030\002 \002(\004\022\025\n\rse" +
+      "condaryLock\030\003 \002(\014\"t\n$ThemisBatchPrewrite" +
+      "SecondaryResponse\0223\n\024themisPrewriteResul" +
+      "t\030\001 \003(\0132\025.ThemisPrewriteResult\022\027\n\017rowsNo" +
+      "tInRegion\030\002 \003(\014\"\204\001\n\024ThemisPrewriteResult",
+      "\022\024\n\014newerWriteTs\030\001 \002(\003\022\021\n\texistLock\030\002 \002(" +
+      "\014\022\016\n\006family\030\003 \002(\014\022\021\n\tqualifier\030\004 \002(\014\022\023\n\013" +
+      "lockExpired\030\005 \002(\010\022\013\n\003row\030\006 \002(\014\":\n\023Themis" +
+      "CommitRequest\022#\n\014themisCommit\030\001 \002(\0132\r.Th" +
+      "emisCommit\"&\n\024ThemisCommitResponse\022\016\n\006re" +
+      "sult\030\001 \002(\010\"H\n!ThemisBatchCommitSecondary" +
+      "Request\022#\n\014themisCommit\030\001 \003(\0132\r.ThemisCo" +
+      "mmit\"k\n\"ThemisBatchCommitSecondaryRespon" +
+      "se\022E\n\032batchCommitSecondaryResult\030\001 \003(\0132!" +
+      ".ThemisBatchCommitSecondaryResult\"@\n The",
+      "misBatchCommitSecondaryResult\022\013\n\003row\030\001 \002" +
+      "(\014\022\017\n\007success\030\002 \002(\010\"q\n\014ThemisCommit\022\013\n\003r" +
+      "ow\030\001 \002(\014\022\030\n\tmutations\030\002 \003(\0132\005.Cell\022\022\n\npr" +
+      "ewriteTs\030\003 \002(\004\022\020\n\010commitTs\030\004 \002(\004\022\024\n\014prim" +
+      "aryIndex\030\005 \002(\005\"V\n\020EraseLockRequest\022\013\n\003ro" +
+      "w\030\001 \002(\014\022\016\n\006family\030\002 \002(\014\022\021\n\tqualifier\030\003 \002" +
+      "(\014\022\022\n\nprewriteTs\030\004 \002(\004\"!\n\021EraseLockRespo" +
+      "nse\022\014\n\004lock\030\001 \001(\014\"\'\n\022LockExpiredRequest\022" +
+      "\021\n\ttimestamp\030\001 \002(\004\"&\n\023LockExpiredRespons" +
+      "e\022\017\n\007expired\030\001 \002(\0102\301\005\n\rThemisService\022A\n\016",
+      "themisBatchGet\022\026.ThemisBatchGetRequest\032\027" +
+      ".ThemisBatchGetResponse\022\'\n\tthemisGet\022\021.T" +
+      "hemisGetRequest\032\007.Result\022>\n\013prewriteRow\022" +
+      "\026.ThemisPrewriteRequest\032\027.ThemisPrewrite" +
+      "Response\022i\n\032batchPrewriteSecondaryRows\022$" +
+      ".ThemisBatchPrewriteSecondaryRequest\032%.T" +
+      "hemisBatchPrewriteSecondaryResponse\022D\n\021p" +
+      "rewriteSingleRow\022\026.ThemisPrewriteRequest" +
+      "\032\027.ThemisPrewriteResponse\0228\n\tcommitRow\022\024" +
+      ".ThemisCommitRequest\032\025.ThemisCommitRespo",
+      "nse\022c\n\030batchCommitSecondaryRows\022\".Themis" +
+      "BatchCommitSecondaryRequest\032#.ThemisBatc" +
+      "hCommitSecondaryResponse\022>\n\017commitSingle" +
+      "Row\022\024.ThemisCommitRequest\032\025.ThemisCommit" +
+      "Response\0228\n\017getLockAndErase\022\021.EraseLockR" +
+      "equest\032\022.EraseLockResponse\022:\n\risLockExpi" +
+      "red\022\023.LockExpiredRequest\032\024.LockExpiredRe" +
+      "sponseBC\n+org.apache.hadoop.hbase.themis" +
+      ".cp.generatedB\014ThemisProtosH\001\210\001\001\240\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -14488,13 +14691,13 @@ public final class ThemisProtos {
           internal_static_ThemisPrewrite_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ThemisPrewrite_descriptor,
-              new java.lang.String[] { "Row", "Mutations", "PrewriteTs", "SecondaryLock", "PrimaryLock", "PrimaryIndex", });
+              new java.lang.String[] { "Row", "Mutations", });
           internal_static_ThemisPrewriteRequest_descriptor =
             getDescriptor().getMessageTypes().get(4);
           internal_static_ThemisPrewriteRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ThemisPrewriteRequest_descriptor,
-              new java.lang.String[] { "ThemisPrewrite", });
+              new java.lang.String[] { "ThemisPrewrite", "PrewriteTs", "SecondaryLock", "PrimaryLock", "PrimaryIndex", });
           internal_static_ThemisPrewriteResponse_descriptor =
             getDescriptor().getMessageTypes().get(5);
           internal_static_ThemisPrewriteResponse_fieldAccessorTable = new
@@ -14506,7 +14709,7 @@ public final class ThemisProtos {
           internal_static_ThemisBatchPrewriteSecondaryRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ThemisBatchPrewriteSecondaryRequest_descriptor,
-              new java.lang.String[] { "ThemisPrewrite", });
+              new java.lang.String[] { "ThemisPrewrite", "PrewriteTs", "SecondaryLock", });
           internal_static_ThemisBatchPrewriteSecondaryResponse_descriptor =
             getDescriptor().getMessageTypes().get(7);
           internal_static_ThemisBatchPrewriteSecondaryResponse_fieldAccessorTable = new

@@ -172,13 +172,11 @@ public class ThemisEndpointClient {
           for (ColumnMutation mutation : row.mutationList()) {
             b.addMutations(ColumnMutation.toCell(mutation));
           }
-          b.setPrewriteTs(prewriteTs);
-          b.setPrimaryLock(HBaseZeroCopyByteString.wrap(HConstants.EMPTY_BYTE_ARRAY));
-          b.setSecondaryLock(
-              HBaseZeroCopyByteString.wrap(secondaryLock == null ? HConstants.EMPTY_BYTE_ARRAY : secondaryLock));
-          b.setPrimaryIndex(-1);
           builder.addThemisPrewrite(b);
         }
+        builder.setPrewriteTs(prewriteTs);
+        builder.setSecondaryLock(
+                HBaseZeroCopyByteString.wrap(secondaryLock == null ? HConstants.EMPTY_BYTE_ARRAY : secondaryLock));
 
         ServerRpcController controller = new ServerRpcController();
         BlockingRpcCallback<ThemisBatchPrewriteSecondaryResponse> rpcCallback = new BlockingRpcCallback<ThemisBatchPrewriteSecondaryResponse>();
@@ -240,12 +238,12 @@ public class ThemisEndpointClient {
           preBuilder.addMutations(ColumnMutation.toCell(mutation));
         }
 
-        preBuilder.setPrewriteTs(prewriteTs);
-        preBuilder.setPrimaryLock(HBaseZeroCopyByteString
-            .wrap(primaryLock == null ? HConstants.EMPTY_BYTE_ARRAY : primaryLock));
-        preBuilder.setSecondaryLock(HBaseZeroCopyByteString
-            .wrap(secondaryLock == null ? HConstants.EMPTY_BYTE_ARRAY : secondaryLock));
-        preBuilder.setPrimaryIndex(primaryIndex);
+        builder.setPrewriteTs(prewriteTs);
+        builder.setPrimaryLock(HBaseZeroCopyByteString
+                .wrap(primaryLock == null ? HConstants.EMPTY_BYTE_ARRAY : primaryLock));
+        builder.setSecondaryLock(HBaseZeroCopyByteString
+                .wrap(secondaryLock == null ? HConstants.EMPTY_BYTE_ARRAY : secondaryLock));
+        builder.setPrimaryIndex(primaryIndex);
         ServerRpcController controller = new ServerRpcController();
         BlockingRpcCallback<ThemisPrewriteResponse> rpcCallback = new BlockingRpcCallback<ThemisPrewriteResponse>();
         
