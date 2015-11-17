@@ -42,7 +42,6 @@ import org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.LockExpiredReque
 import org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.LockExpiredResponse;
 import org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.ThemisBatchCommitSecondaryRequest;
 import org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.ThemisBatchCommitSecondaryResponse;
-import org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.ThemisBatchCommitSecondaryResult;
 import org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.ThemisBatchPrewriteSecondaryRequest;
 import org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.ThemisBatchPrewriteSecondaryResponse;
 import org.apache.hadoop.hbase.themis.cp.generated.ThemisProtos.ThemisCommit;
@@ -61,7 +60,6 @@ import org.apache.hadoop.hbase.util.Pair;
 import org.apache.hadoop.metrics.util.MetricsTimeVaryingRate;
 
 import com.google.common.collect.Lists;
-import com.google.protobuf.ByteString;
 import com.google.protobuf.HBaseZeroCopyByteString;
 import com.google.protobuf.RpcCallback;
 import com.google.protobuf.RpcController;
@@ -70,14 +68,9 @@ import com.google.protobuf.Service;
 public class ThemisEndpoint extends ThemisService implements CoprocessorService, Coprocessor {
   private static final Log LOG = LogFactory.getLog(ThemisEndpoint.class);
   private static final byte[] EMPTY_BYTES = new byte[0];
-  private static final String THEMIS_BATCH_PREWRITE_SECONDARY_THREAD_COUNT = "themis.batch.prewrite.secondary.thread.count";
-  private static final String THEMIS_BATCH_COMMIT_SECONDARY_THREAD_COUNT = "themis.batch.commit.secondary.thread.count";
   private static final int DEFAULT_THREAD_COUNT = Runtime.getRuntime().availableProcessors() * 5;
-  private static final int DEFAULT_THEMIS_BATCH_PREWRITE_SECONDARY_THREAD_COUNT = DEFAULT_THREAD_COUNT;
-  private static final int DEFAULT_THEMIS_BATCH_COMMIT_SECONDARY_THREAD_COUNT = DEFAULT_THREAD_COUNT;
   private static final int DEFAULT_THEMIS_BATCH_GET_THREAD_COUNT = DEFAULT_THREAD_COUNT;
-  private static volatile boolean hasConfigBatchThreadCount = false;
-  
+
   private RegionCoprocessorEnvironment env;
 
   private static ThreadPoolExecutor batchGetThreadPool = new ThreadPoolExecutor(
@@ -89,28 +82,8 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
       return t;
     }
   });
-  private static ThreadPoolExecutor batchPrewriteSecPool = new ThreadPoolExecutor(
-      DEFAULT_THEMIS_BATCH_PREWRITE_SECONDARY_THREAD_COUNT, DEFAULT_THEMIS_BATCH_PREWRITE_SECONDARY_THREAD_COUNT, 10,
-      TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadFactory() {
-        public Thread newThread(Runnable r) {
-          Thread t = new Thread(r);
-          t.setName("themis-batch-prewrite-secondary-thread-" + System.currentTimeMillis());
-          return t;
-        }
-      });
-  private static ThreadPoolExecutor batchCommitSecPool = new ThreadPoolExecutor(
-      DEFAULT_THEMIS_BATCH_COMMIT_SECONDARY_THREAD_COUNT, DEFAULT_THEMIS_BATCH_COMMIT_SECONDARY_THREAD_COUNT, 10,
-      TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadFactory() {
-        public Thread newThread(Runnable r) {
-          Thread t = new Thread(r);
-          t.setName("themis-batch-commit-secondary-thread-" + System.currentTimeMillis());
-          return t;
-        }
-      });
 
   static {
-    batchPrewriteSecPool.allowCoreThreadTimeOut(true);
-    batchCommitSecPool.allowCoreThreadTimeOut(true);
     batchGetThreadPool.allowCoreThreadTimeOut(true);
   }
   
@@ -123,22 +96,6 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
     this.env = (RegionCoprocessorEnvironment) env;
     ColumnUtil.init(env.getConfiguration());
     TransactionTTL.init(env.getConfiguration());
-    if (!hasConfigBatchThreadCount) {
-      hasConfigBatchThreadCount = true;
-      int newBatchPreCount = env.getConfiguration().getInt(THEMIS_BATCH_PREWRITE_SECONDARY_THREAD_COUNT,
-          DEFAULT_THEMIS_BATCH_PREWRITE_SECONDARY_THREAD_COUNT);
-      if (newBatchPreCount > 0 && newBatchPreCount != DEFAULT_THEMIS_BATCH_PREWRITE_SECONDARY_THREAD_COUNT) {
-        batchPrewriteSecPool.setCorePoolSize(newBatchPreCount);
-      }
-
-      int newBatchCommitCount = env.getConfiguration().getInt(THEMIS_BATCH_COMMIT_SECONDARY_THREAD_COUNT,
-          DEFAULT_THEMIS_BATCH_COMMIT_SECONDARY_THREAD_COUNT);
-      if (newBatchCommitCount > 0 && newBatchCommitCount > DEFAULT_THEMIS_BATCH_COMMIT_SECONDARY_THREAD_COUNT) {
-        batchCommitSecPool.setCorePoolSize(newBatchCommitCount);
-      }
-      LOG.info("themis batch prewrite secondary thread count : " + newBatchPreCount);
-      LOG.info("themis batch commit secondary thread count : " + newBatchCommitCount);
-    }
   }
 
   public void stop(CoprocessorEnvironment env) throws IOException {
@@ -297,7 +254,7 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
     ThemisBatchPrewriteSecondaryResponse.Builder builder = ThemisBatchPrewriteSecondaryResponse.newBuilder();
     List<ThemisPrewriteResult> results = null;
     try {
-      results = batchPrewriteSecondaryRows(controller, request);
+      results = batchPrewriteSecondaryRows(request);
     } catch (IOException e) {
       ResponseConverter.setControllerException(controller, new IOException(e));
     }
@@ -309,27 +266,6 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
     callback.run(builder.build());
   }
 
-  class BatchPrewriteSecondaryTask implements Callable<ThemisPrewriteResult> {
-    private RpcController controller;
-    private ThemisPrewrite prewrite;
-    private long prewriteTs;
-    private byte[] primaryLock;
-    private byte[] secondaryLock;
-
-    public BatchPrewriteSecondaryTask(RpcController controller, ThemisPrewrite prewrite,
-                                      long prewriteTs, byte[] primaryLock, byte[] secondaryLock) {
-      this.controller = controller;
-      this.prewrite = prewrite;
-      this.prewriteTs = prewriteTs;
-      this.primaryLock = primaryLock;
-      this.secondaryLock = secondaryLock;
-    }
-
-    public ThemisPrewriteResult call() throws Exception {
-      return prewriteRow(controller, prewrite, prewriteTs, primaryLock, secondaryLock, -1 , false);
-    }
-  }
-  
   protected void prewritePrimaryRow(RpcController controller, ThemisPrewriteRequest request,
       RpcCallback<ThemisPrewriteResponse> callback, boolean isSingleRow) {
     ThemisPrewriteResponse.Builder builder = ThemisPrewriteResponse.newBuilder();
@@ -344,12 +280,13 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
     callback.run(builder.build());
   }
 
-  private List<ThemisPrewriteResult> batchPrewriteSecondaryRows(RpcController controller, ThemisBatchPrewriteSecondaryRequest request) throws IOException {
+  private List<ThemisPrewriteResult> batchPrewriteSecondaryRows(ThemisBatchPrewriteSecondaryRequest request) throws IOException {
     HRegion region = env.getRegion();
     List<ThemisPrewriteResult> results = new ArrayList<>();
     List<Mutation> puts = new ArrayList<>();
     List<RowLock> rowLocks = new ArrayList<>();
-    try{
+    byte[] lockBytes = request.getSecondaryLock().toByteArray();
+    try {
       for (ThemisPrewrite prewrite : request.getThemisPrewriteList()) {
         rowLocks.add(region.getRowLock(prewrite.getRow().toByteArray()));
       }
@@ -372,7 +309,6 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
         for (int i = 0; i < mutations.size(); ++i) {
           ColumnMutation m = mutations.get(i);
           // get lock and set lock Type
-          byte[] lockBytes = request.getSecondaryLock().toByteArray();
           ThemisLock lock;
           lock = ThemisLock.parseFromByte(lockBytes);
           lock.setType(m.getType());
@@ -388,6 +324,8 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
       }
       // batch put
       region.mutateRowsWithLocks(puts, Collections.<byte[]>emptySet());
+    } catch (IOException e) {
+      throw e;
     } finally {
       // release all locks
       for (RowLock lock : rowLocks) {
@@ -416,10 +354,6 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
     return null;
   }
 
-  private ByteString wrapByte(byte[] byteArr) {
-    return HBaseZeroCopyByteString.wrap(byteArr);
-  }
-  
   abstract class MutationCallable<R> {
     private final byte[] row;
     public MutationCallable(byte[] row) {
@@ -648,10 +582,15 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
               ThemisCpStatistics.getThemisCpStatistics().commitTotalLatency, beginTs, false);
     }
   }
-  
+
   protected void doCommitMutations(HRegion region, byte[] row, List<ColumnMutation> mutations,
       long prewriteTs, long commitTs, boolean singleRow)
       throws IOException {
+    List<Mutation> rowMutations = getCommitMutations(row, mutations, prewriteTs, commitTs, singleRow);
+    mutateToRegion(region, row, rowMutations, ThemisCpStatistics.getThemisCpStatistics().commitWriteLatency);
+  }
+
+  private List<Mutation> getCommitMutations(byte[] row, List<ColumnMutation> mutations, long prewriteTs, long commitTs, boolean singleRow) {
     List<Mutation> rowMutations = new ArrayList<>();
     for (ColumnMutation mutation : mutations) {
       Put writePut = new Put(row);
@@ -680,9 +619,9 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
       setLockFamilyDelete(lockDelete);
       rowMutations.add(lockDelete);
     }
-    mutateToRegion(region, row, rowMutations, ThemisCpStatistics.getThemisCpStatistics().commitWriteLatency);
+    return rowMutations;
   }
-  
+
   protected byte[] readLockBytes(HRegion region, byte[] row, Column column, long prewriteTs,
       MetricsTimeVaryingRate latency) throws IOException {
     Column lockColumn = ColumnUtil.getLockColumn(column);
@@ -738,6 +677,34 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
   }
 
   @Override
+  public void batchCommitSecondaryRows(RpcController controller, ThemisBatchCommitSecondaryRequest request,
+      RpcCallback<ThemisBatchCommitSecondaryResponse> callback) {
+    ThemisBatchCommitSecondaryResponse.Builder builder = ThemisBatchCommitSecondaryResponse.newBuilder();
+    try {
+      List<ThemisCommit> commits = request.getThemisCommitList();
+      if (commits == null || commits.size() == 0) {
+        callback.run(builder.build());
+        LOG.warn("has not secondary rows");
+        return;
+      }
+      HRegion region = env.getRegion();
+      List<byte[]> rows = new ArrayList<>();
+      List<Mutation> allMutations = new ArrayList<>();
+      for (ThemisCommit commit : commits) {
+        rows.add(commit.getRow().toByteArray());
+         List<Mutation> mutations = getCommitMutations(commit.getRow().toByteArray(),
+          ColumnMutation.toColumnMutations(commit.getMutationsList()), commit.getPrewriteTs(), commit.getCommitTs(), false);
+        allMutations.addAll(mutations);
+      }
+      region.mutateRowsWithLocks(allMutations, rows);
+    } catch (Exception e) {
+      LOG.error("batch commit secondary rows fail", e);
+      ResponseConverter.setControllerException(controller, new IOException(e));
+    }
+    callback.run(builder.build());
+  }
+
+  @Override
   public void themisBatchGet(RpcController controller, ThemisProtos.ThemisBatchGetRequest request, RpcCallback<ThemisProtos.ThemisBatchGetResponse> callback) {
     ThemisBatchGetResponse.Builder builder = ThemisBatchGetResponse.newBuilder();
     try {
@@ -746,7 +713,7 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
         callback.run(builder.build());
         return;
       }
-      List<Future<Result>> list = new ArrayList<Future<Result>>();
+      List<Future<Result>> list = new ArrayList<>();
       for (ClientProtos.Get g : getList) {
         Get clientGet = ProtobufUtil.toGet(g);
         // send to thread pool
@@ -770,61 +737,6 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
       ResponseConverter.setControllerException(controller, e);
     }
     callback.run(builder.build());
-  }
-
-  @Override
-  public void batchCommitSecondaryRows(RpcController controller, ThemisBatchCommitSecondaryRequest request,
-      RpcCallback<ThemisBatchCommitSecondaryResponse> callback) {
-    ThemisBatchCommitSecondaryResponse.Builder builder = ThemisBatchCommitSecondaryResponse.newBuilder();
-    try {
-      List<ThemisCommit> commits = request.getThemisCommitList();
-      if (commits == null || commits.size() == 0) {
-        callback.run(builder.build());
-        LOG.warn("has not secondary rows");
-        return;
-      }
-      List<Future<ThemisBatchCommitSecondaryResult>> list = new ArrayList<>();
-      for (ThemisCommit commit : commits) {
-        Future<ThemisBatchCommitSecondaryResult> f = batchCommitSecPool.submit(new BatchCommitSecondaryTask(commit));
-        list.add(f);
-      }
-
-      for (Future<ThemisBatchCommitSecondaryResult> future : list) {
-        ThemisBatchCommitSecondaryResult r;
-        try {
-          r = future.get();
-          if (r != null && !r.getSuccess()) {
-            builder.addBatchCommitSecondaryResult(r);
-          }
-        } catch (Exception e) {
-          LOG.error("batch commit error", e);
-          ResponseConverter.setControllerException(controller, new IOException(e));
-        }
-      }
-    } catch (Exception e) {
-      LOG.error("batch commit secondary rows fail", e);
-      ResponseConverter.setControllerException(controller, new IOException(e));
-    }
-
-    callback.run(builder.build());
-  }
-
-  class BatchCommitSecondaryTask implements Callable<ThemisBatchCommitSecondaryResult> {
-    private ThemisCommit commit;
-
-    public BatchCommitSecondaryTask(ThemisCommit commit) {
-      this.commit = commit;
-    }
-
-    public ThemisBatchCommitSecondaryResult call() throws Exception {
-      boolean success = commitRow(commit.getRow().toByteArray(),
-          ColumnMutation.toColumnMutations(commit.getMutationsList()), commit.getPrewriteTs(), commit.getCommitTs(),
-          commit.getPrimaryIndex(), false);
-      ThemisBatchCommitSecondaryResult.Builder result = ThemisBatchCommitSecondaryResult.newBuilder();
-      result.setSuccess(success);
-      result.setRow(commit.getRow());
-      return result.build();
-    }
   }
 
   class BatchGetTask implements Callable<Result> {
