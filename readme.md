@@ -1,5 +1,7 @@
 # Themis 
 
+[![Build Status](https://travis-ci.org/pingcap/themis.svg)](https://travis-ci.org/pingcap/themis)
+
 ## Introduction
 
 Themis provides cross-row/cross-table transaction on HBase based on [google's Percolator](http://research.google.com/pubs/pub36726.html).
