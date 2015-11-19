@@ -35,7 +35,7 @@ mvn clean package -DskipTests
 
 ### Deploy
 
-1. Copy themis coprocessor to {hbase-directory}/lib/
+1. Copy themis coprocessor to $HBASE_ROOT/lib/
 
 ```
 cp themis-coprocessor/target/themis-coprocessor-1.0-SNAPSHOT-jar-with-dependencies.jar $HBASE_ROOT/lib
@@ -59,5 +59,5 @@ cp themis-coprocessor/target/themis-coprocessor-1.0-SNAPSHOT-jar-with-dependenci
 
 ## Future Works
 
-1. Buffer recent committed primary locks in region server for fast checking conflict.
-2. SQL push-down.
+1. Buffer recent committed primary locks in region server for fast conflict checking.
+2. SQL pushdown.
