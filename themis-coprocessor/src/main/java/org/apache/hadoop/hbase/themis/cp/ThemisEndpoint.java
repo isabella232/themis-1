@@ -342,7 +342,7 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
     try {
       conflict = prewriteRow(prewrite.getRow().toByteArray(),
           ColumnMutation.toColumnMutations(prewrite.getMutationsList()), prewriteTs,
-          secondaryLock, primaryLock,
+          primaryLock, secondaryLock,
           primaryIndex, isSingleRow);
     } catch (IOException e) {
       LOG.error("prewrite fail", e);
@@ -418,7 +418,7 @@ public class ThemisEndpoint extends ThemisService implements CoprocessorService,
   }
   
   public ThemisPrewriteResult prewriteRow(final byte[] row, final List<ColumnMutation> mutations,
-      final long prewriteTs, final byte[] secondaryLock, final byte[] primaryLock,
+      final long prewriteTs, final byte[] primaryLock, final byte[] secondaryLock,
       final int primaryIndex, final boolean singleRow) throws IOException {
     // TODO : use ms enough?
     final long beginTs = System.nanoTime();
