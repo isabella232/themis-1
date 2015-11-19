@@ -20,14 +20,12 @@ Tested on Oracle JDK7
 
 ### Build
 
-1. Get the latest source code of Themis:
-
+- Get the latest source code of Themis:
 ```
 git clone https://github.com/pingcap/themis.git
-```
+```  
 
-2. Build Themis 
-
+- Build Themis 
 ```
 cd themis
 mvn clean package -DskipTests
@@ -35,13 +33,12 @@ mvn clean package -DskipTests
 
 ### Deploy
 
-1. Copy themis coprocessor to $HBASE_ROOT/lib/
-
+- Copy themis coprocessor to $HBASE_ROOT/lib/
 ```
 cp themis-coprocessor/target/themis-coprocessor-1.0-SNAPSHOT-jar-with-dependencies.jar $HBASE_ROOT/lib
 ```
 
-2. Add configurations for themis coprocessor in hbase-site.xml:
+- Add configurations for themis coprocessor in hbase-site.xml:
 
 ```
 <property>
@@ -53,9 +50,8 @@ cp themis-coprocessor/target/themis-coprocessor-1.0-SNAPSHOT-jar-with-dependenci
     <value>org.apache.hadoop.hbase.master.ThemisMasterObserver</value>
 </property>
 ```
-
-3. Restart HBase.
-4. Enjoy it.
+- Restart HBase.
+- Enjoy it.
 
 ## Future Works
 
