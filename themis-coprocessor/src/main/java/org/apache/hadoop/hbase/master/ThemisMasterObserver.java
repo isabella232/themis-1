@@ -22,7 +22,6 @@ import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.client.UnmodifyableHTableDescriptor;
 import org.apache.hadoop.hbase.coprocessor.BaseMasterObserver;
 import org.apache.hadoop.hbase.coprocessor.MasterCoprocessorEnvironment;
 import org.apache.hadoop.hbase.coprocessor.ObserverContext;
@@ -179,7 +178,7 @@ public class ThemisMasterObserver extends BaseMasterObserver {
     }
 
     LOG.info("try to start thread to compute the expired timestamp for themis table");
-    this.zk = ((MasterEnvironment)ctx).getMasterServices().getZooKeeper();
+    this.zk = ctx.getMasterServices().getZooKeeper();
     themisExpiredTsZNodePath = getThemisExpiredTsZNodePath(this.zk);
 
     connection = HConnectionManager.createConnection(ctx.getConfiguration());
@@ -221,14 +220,11 @@ public class ThemisMasterObserver extends BaseMasterObserver {
         LOG.error("themis clean expired lock fail", e);
       }
      }
-    
-    public long getCurrentExpiredTs() {
-      return currentExpiredTs;
-    }
+
   }
   
   public static List<String> getThemisTables(HConnection connection) throws IOException {
-    List<String> tableNames = new ArrayList<String>();
+    List<String> tableNames = new ArrayList<>();
     HBaseAdmin admin = null;
     try {
       admin = new HBaseAdmin(connection);
@@ -285,7 +281,7 @@ public class ThemisMasterObserver extends BaseMasterObserver {
         scan.addFamily(ColumnUtil.LOCK_FAMILY_NAME);
         scan.setTimeRange(0, ts);
         ResultScanner scanner = hTable.getScanner(scan);
-        Result result = null;
+        Result result;
         while ((result = scanner.next()) != null) {
           for (KeyValue kv : result.list()) {
             ThemisLock lock = ThemisLock.parseFromByte(kv.getValue());

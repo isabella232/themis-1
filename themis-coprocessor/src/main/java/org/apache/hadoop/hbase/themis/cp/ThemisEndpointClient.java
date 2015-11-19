@@ -204,7 +204,7 @@ public class ThemisEndpointClient {
   }
 
   private Map<byte[], List<ColumnMutation>> list2Map4Batch(List<RowMutation> rows) {
-    Map<byte[], List<ColumnMutation>> rowMap = new HashMap<byte[], List<ColumnMutation>>();
+    Map<byte[], List<ColumnMutation>> rowMap = new HashMap<>();
     for (RowMutation rowM : rows) {
       rowMap.put(rowM.getRow(), rowM.mutationList());
     }
@@ -308,7 +308,7 @@ public class ThemisEndpointClient {
       public List<ThemisBatchCommitSecondaryResult> invokeCoprocessor(Stub instance) throws Throwable {
         ThemisBatchCommitSecondaryRequest.Builder builder = ThemisBatchCommitSecondaryRequest.newBuilder();
 
-        ThemisCommit.Builder cb = null;
+        ThemisCommit.Builder cb;
         for (RowMutation rowMutation : rows) {
           cb = ThemisCommit.newBuilder();
           cb.setRow(HBaseZeroCopyByteString.wrap(rowMutation.getRow()));
