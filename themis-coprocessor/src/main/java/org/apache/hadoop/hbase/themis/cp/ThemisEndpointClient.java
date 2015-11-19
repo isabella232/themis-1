@@ -245,7 +245,7 @@ public class ThemisEndpointClient {
                 .wrap(secondaryLock == null ? HConstants.EMPTY_BYTE_ARRAY : secondaryLock));
         builder.setPrimaryIndex(primaryIndex);
         ServerRpcController controller = new ServerRpcController();
-        BlockingRpcCallback<ThemisPrewriteResponse> rpcCallback = new BlockingRpcCallback<ThemisPrewriteResponse>();
+        BlockingRpcCallback<ThemisPrewriteResponse> rpcCallback = new BlockingRpcCallback<>();
         
         if (isSingleRow) {
           instance.prewriteSingleRow(controller, builder.build(), rpcCallback);
@@ -278,7 +278,7 @@ public class ThemisEndpointClient {
 
   protected ThemisLock judgePerwriteResultRow(byte[] tableName, byte[] row, ThemisPrewriteResult prewriteResult,
       long prewriteTs) throws IOException {
-    if (prewriteResult != null && prewriteResult.getNewerWriteTs() > 0) {
+    if (prewriteResult != null && prewriteResult.hasExistLock()) {
       long commitTs = prewriteResult.getNewerWriteTs();
       if (commitTs != 0) {
         throw new WriteConflictException(
