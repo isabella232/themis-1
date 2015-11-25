@@ -502,7 +502,7 @@ public class TestThemisCoprocessorRead extends TransactionTestBase {
   @Test
   public void testExpiredGet() throws IOException {
     // only test in MiniCluster
-    if (TEST_UTIL != null) {
+    if (TEST_UTIL != null && TransactionTTL.transactionTTLEnable) {
       // won't expired
       long currentMs = System.currentTimeMillis() + TransactionTTL.writeTransactionTTL;
       prewriteTs = TransactionTTL.getExpiredTimestampForReadByCommitColumn(currentMs);
@@ -521,11 +521,12 @@ public class TestThemisCoprocessorRead extends TransactionTestBase {
       }
     }
   }
-  
+
+
   @Test
   public void testExpiredScan() throws IOException {
     // only test in MiniCluster
-    if (TEST_UTIL != null) {
+    if (TEST_UTIL != null && TransactionTTL.transactionTTLEnable) {
       prewritePrimaryRow();
       commitPrimaryRow();
       // won't expired

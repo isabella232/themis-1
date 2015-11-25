@@ -243,7 +243,7 @@ public class TestThemisCoprocessorWrite extends TransactionTestBase {
   @Test
   public void testTransactionExpiredWhenPrewrite() throws IOException {
     // only test in MiniCluster
-    if (TEST_UTIL != null) {
+    if (TEST_UTIL != null && TransactionTTL.transactionTTLEnable) {
       // remove old family delete
       truncateTable(TABLENAME);
       // won't expired
@@ -269,7 +269,7 @@ public class TestThemisCoprocessorWrite extends TransactionTestBase {
   @Test
   public void testTransactionExpiredWhenCommit() throws IOException {
     // only test in MiniCluster
-    if (TEST_UTIL != null) {
+    if (TEST_UTIL != null && TransactionTTL.transactionTTLEnable) {
       // remove old family delete
       truncateTable(TABLENAME);
       // won't expired

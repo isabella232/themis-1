@@ -25,7 +25,7 @@ public class TransactionTTL {
   }
   
   public static void init(Configuration conf) throws IOException {
-    transactionTTLEnable = conf.getBoolean(THEMIS_TRANSACTION_TTL_ENABLE_KEY, true);
+    transactionTTLEnable = conf.getBoolean(THEMIS_TRANSACTION_TTL_ENABLE_KEY, false);
     readTransactionTTL = conf.getInt(THEMIS_READ_TRANSACTION_TTL_KEY,
       DEFAULT_THEMIS_READ_TRANSACTION_TTL) * 1000;
     writeTransactionTTL = conf.getInt(THEMIS_WRITE_TRANSACTION_TTL_KEY,
