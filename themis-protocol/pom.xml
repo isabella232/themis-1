@@ -94,12 +94,14 @@
                     <protocVersion>2.5.0</protocVersion>
                     <imports>
                       <param>${basedir}/src/main/protobuf</param>
-                        <param>/Users/dongxu/hbase-0.98.13/hbase-protocol/src/main/protobuf</param>
+                      <param>/Users/dongxu/hbase-0.98.13/hbase-protocol/src/main/protobuf</param>
                     </imports>
                     <source>
                       <directory>${basedir}/src/main/protobuf</directory>
                       <includes>
-                        <include>Themis.proto</include>
+			      <param>**/*.proto</param>
+                        <!--include>Themis.proto</include>
+                        <include>tidb.proto</include-->
                       </includes>
                     </source>
                     <!--<output>${project.build.directory}/generated-sources/java</output>-->

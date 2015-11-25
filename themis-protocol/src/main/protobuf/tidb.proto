@@ -1,0 +1,83 @@
+// TiDB schema info protobuf description file
+option java_package = "org.apache.hadoop.hbase.tidb.cp.generated";
+option java_outer_classname = "TiDBProto";
+option java_generic_services = true;
+option java_generate_equals_and_hash = true;
+option optimize_for = SPEED;
+
+message TableName {
+    required string schemaName = 1;  // DB Name
+    required string tableName  = 2;  // Table Name
+}
+
+message CharCollation {
+   optional string characterSetName = 1;
+   optional string collationOrderName = 2;
+}
+
+enum JoinType {
+   LEFT_OUTER_JOIN  = 0;
+   RIGHT_OUTER_JOIN = 1;
+   FULL_OUTER_JOIN  = 2;
+   INNER_JOIN       = 3;
+}
+
+// One of the column pairs which define the Join.
+message JoinColumn {
+   optional string parentColumn = 1; // link to Column.columnName
+   optional string childColumn  = 2; // link to Column.columnName
+   optional int32  position     = 3; // order of column list in join
+}
+
+message Join {
+    repeated JoinColumn columns     = 2;  // list of columns for this join
+    optional TableName constraintName = 3; // Name of constraint
+}	
+
+message TIndexColumn {
+    optional string    Name  = 1;
+    optional int32     Offset = 2;  // order of the column in the index
+    optional int32     Length = 3; // number of bytes from column used in index (null if entire column is used)
+}
+
+// Column info in Table.
+// Only contains publiced indices.
+message TIndex {
+	optional int32    ID     = 1; 
+	optional string   Name   = 2;
+	optional bool     IsPK        = 3;  // Is the primary key index
+	optional bool     IsUnique    = 4;  // Is a unique index
+	repeated TIndexColumn Columns  = 5;  // list of columns for this index
+}
+
+// Column info in Table.
+// Only contains publiced columns.
+message TColumn {
+    required int64 ID = 1;
+    required string  Name   = 2;
+    optional FieldType   Type     = 3;
+    optional int32   Offset     = 4;
+    optional string defaultValue   = 5; 
+}
+
+message FieldType {
+	required int32 Tp = 1;
+	required uint32 Flag = 2;
+	required int32 Flen = 3;
+	required int32 Decimal = 4;
+	optional CharCollation CharsetInfo = 5;
+	repeated string Elems = 6;
+}
+
+message TTable {
+    optional int64    ID	= 1;
+    optional string  Name    = 2;
+    repeated TColumn  columns      = 3;  // list of columns in the table
+    repeated TIndex   indexes      = 4;  // list of indexes on the table
+    optional CharCollation charColl = 5; // table default character set & collation
+}
+
+message Property {
+    optional string key = 1;
+    optional string value = 2;
+}
