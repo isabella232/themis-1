@@ -1,5 +1,7 @@
 package com.pingcap.tidb.expression;
 
+import java.util.List;
+
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import com.pingcap.tidb.schema.DataItem;
 

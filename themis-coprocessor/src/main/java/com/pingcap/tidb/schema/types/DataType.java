@@ -8,174 +8,37 @@ import org.apache.hadoop.hbase.util.Bytes;
  */
 public abstract class DataType<T> implements Comparable<T> {
 
-    private final String sqlTypeName;
     private final int sqlType;
-    private final Class clazz;
-    private final byte[] clazzNameBytes;
-    private final byte[] sqlTypeNameBytes;
-    private final DataCodec codec;
-    private final int ordinal;
+    private final TDataCodec codec;
 
-    protected DataType(String sqlTypeName, int sqlType, Class clazz, DataCodec codec, int ordinal) {
-        this.sqlTypeName = sqlTypeName;
+    protected DataType(int sqlType, TDataCodec codec) {
         this.sqlType = sqlType;
-        this.clazz = clazz;
-        this.clazzNameBytes = Bytes.toBytes(clazz.getName());
-        this.sqlTypeNameBytes = Bytes.toBytes(sqlTypeName);
         this.codec = codec;
-        this.ordinal = ordinal;
     }
 
-    public static interface PDataCodec {
-        public long decodeLong(ImmutableBytesWritable ptr, SortOrder sortOrder);
+    public static interface TDataCodec {
 
-        public long decodeLong(byte[] b, int o, SortOrder sortOrder);
+        public long decodeLong(ImmutableBytesWritable ptr);
 
-        public int decodeInt(ImmutableBytesWritable ptr, SortOrder sortOrder);
+        public long decodeLong(byte[] b, int o);
 
-        public int decodeInt(byte[] b, int o, SortOrder sortOrder);
+        public int encodeLong(int v, ImmutableBytesWritable ptr);
 
-        public byte decodeByte(ImmutableBytesWritable ptr, SortOrder sortOrder);
+        public int encodeLong(int v, byte[] b, int o);
 
-        public byte decodeByte(byte[] b, int o, SortOrder sortOrder);
-
-        public short decodeShort(ImmutableBytesWritable ptr, SortOrder sortOrder);
-
-        public short decodeShort(byte[] b, int o, SortOrder sortOrder);
-
-        public float decodeFloat(ImmutableBytesWritable ptr, SortOrder sortOrder);
-
-        public float decodeFloat(byte[] b, int o, SortOrder sortOrder);
-
-        public double decodeDouble(ImmutableBytesWritable ptr, SortOrder sortOrder);
-
-        public double decodeDouble(byte[] b, int o, SortOrder sortOrder);
-
-        public int encodeLong(long v, ImmutableBytesWritable ptr);
-
-        public int encodeLong(long v, byte[] b, int o);
-
-        public int encodeInt(int v, ImmutableBytesWritable ptr);
-
-        public int encodeInt(int v, byte[] b, int o);
-
-        public int encodeByte(byte v, ImmutableBytesWritable ptr);
-
-        public int encodeByte(byte v, byte[] b, int o);
-
-        public int encodeShort(short v, ImmutableBytesWritable ptr);
-
-        public int encodeShort(short v, byte[] b, int o);
-
-        public int encodeFloat(float v, ImmutableBytesWritable ptr);
-
-        public int encodeFloat(float v, byte[] b, int o);
-
-        public int encodeDouble(double v, ImmutableBytesWritable ptr);
-
-        public int encodeDouble(double v, byte[] b, int o);
-
-        public PhoenixArrayFactory getPhoenixArrayFactory();
     }
 
-    public static abstract class BaseCodec implements PDataCodec {
-        @Override
-        public int decodeInt(ImmutableBytesWritable ptr, SortOrder sortOrder) {
-            return decodeInt(ptr.get(), ptr.getOffset(), sortOrder);
+    public static abstract class BaseCodec implements TDataCodec {
+
+        public long decodeLong(ImmutableBytesWritable ptr) {
+            return decodeLong(ptr.get(), ptr.getOffset());
         }
 
-        @Override
-        public long decodeLong(ImmutableBytesWritable ptr, SortOrder sortOrder) {
-            return decodeLong(ptr.get(), ptr.getOffset(), sortOrder);
-        }
-
-        @Override
-        public byte decodeByte(ImmutableBytesWritable ptr, SortOrder sortOrder) {
-            return decodeByte(ptr.get(), ptr.getOffset(), sortOrder);
-        }
-
-        @Override
-        public short decodeShort(ImmutableBytesWritable ptr, SortOrder sortOrder) {
-            return decodeShort(ptr.get(), ptr.getOffset(), sortOrder);
-        }
-
-        @Override
-        public float decodeFloat(ImmutableBytesWritable ptr, SortOrder sortOrder) {
-            return decodeFloat(ptr.get(), ptr.getOffset(), sortOrder);
-        }
-
-        @Override
-        public float decodeFloat(byte[] b, int o, SortOrder sortOrder) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public double decodeDouble(ImmutableBytesWritable ptr, SortOrder sortOrder) {
-            return decodeDouble(ptr.get(), ptr.getOffset(), sortOrder);
-        }
-
-        @Override
-        public double decodeDouble(byte[] b, int o, SortOrder sortOrder) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int encodeInt(int v, ImmutableBytesWritable ptr) {
-            return encodeInt(v, ptr.get(), ptr.getOffset());
-        }
-
-        @Override
-        public int encodeLong(long v, ImmutableBytesWritable ptr) {
+        public int encodeLong(int v, ImmutableBytesWritable ptr) {
             return encodeLong(v, ptr.get(), ptr.getOffset());
         }
 
-        @Override
-        public int encodeByte(byte v, ImmutableBytesWritable ptr) {
-            return encodeByte(v, ptr.get(), ptr.getOffset());
-        }
-
-        @Override
-        public int encodeShort(short v, ImmutableBytesWritable ptr) {
-            return encodeShort(v, ptr.get(), ptr.getOffset());
-        }
-
-        @Override
-        public int encodeFloat(float v, ImmutableBytesWritable ptr) {
-            return encodeFloat(v, ptr.get(), ptr.getOffset());
-        }
-
-        @Override
-        public int encodeDouble(double v, ImmutableBytesWritable ptr) {
-            return encodeDouble(v, ptr.get(), ptr.getOffset());
-        }
-
-        @Override
-        public int encodeInt(int v, byte[] b, int o) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int encodeLong(long v, byte[] b, int o) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int encodeByte(byte v, byte[] b, int o) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int encodeShort(short v, byte[] b, int o) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int encodeFloat(float v, byte[] b, int o) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int encodeDouble(double v, byte[] b, int o) {
+        public int encodeLong(int v, byte[] b, int o) {
             throw new UnsupportedOperationException();
         }
     }

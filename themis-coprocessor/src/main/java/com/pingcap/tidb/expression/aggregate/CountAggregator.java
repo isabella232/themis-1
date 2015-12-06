@@ -1,6 +1,7 @@
 package com.pingcap.tidb.expression.aggregate;
 
 import com.pingcap.tidb.schema.TRow;
+import com.pingcap.tidb.schema.types.TLong;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 
 /**
@@ -11,16 +12,10 @@ public class CountAggregator extends BaseAggregator {
     private long count = 0;
     private byte[] buffer = null;
 
-    public CountAggregator() {
-    }
-
-    public CountAggregator(LongSumAggregator clientAgg) {
-        this();
-        count = clientAgg.getSum();
-    }
+    public CountAggregator() {}
 
     @Override
-    public void aggregate(TRow tuple, ImmutableBytesWritable ptr) {
+    public void aggregate(TRow row, ImmutableBytesWritable ptr) {
         count++;
     }
 
@@ -29,22 +24,17 @@ public class CountAggregator extends BaseAggregator {
         return false;
     }
 
-    @Override
     public boolean evaluate(TRow row, ImmutableBytesWritable ptr) {
         if (buffer == null) {
             buffer = new byte[TLong.ByteSize];
         }
-        //getDataType().getCodec().encodeLong(count, buffer, 0);
         ptr.set(buffer);
         return true;
     }
 
-
-    @Override
     public void reset() {
         count = 0;
         buffer = null;
-        super.reset();
     }
 
     @Override
@@ -54,7 +44,6 @@ public class CountAggregator extends BaseAggregator {
 
     @Override
     public int getSize() {
-        return super.getSize() + SizedUtil.LONG_SIZE + SizedUtil.ARRAY_SIZE
-                + getDataType().getByteSize();
+        return 0;
     }
 }

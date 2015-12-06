@@ -1,20 +1,22 @@
 package org.apache.hadoop.hbase.tidb.cp;
 
+import com.pingcap.tidb.expression.aggregate.Aggregator;
 import com.pingcap.tidb.expression.aggregate.Aggregators;
+import com.pingcap.tidb.expression.aggregate.CountAggregator;
 import com.pingcap.tidb.expression.aggregate.ServerAggregators;
-import org.apache.hadoop.hbase.Cell;
-import org.apache.hadoop.hbase.DoNotRetryIOException;
-import org.apache.hadoop.hbase.HRegionInfo;
-import org.apache.hadoop.hbase.KeyValue;
+import com.pingcap.tidb.schema.TRow;
+import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.coprocessor.BaseRegionObserver;
 import org.apache.hadoop.hbase.coprocessor.ObserverContext;
 import org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment;
+import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.regionserver.HRegion;
 import org.apache.hadoop.hbase.regionserver.RegionScanner;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TiDBRegionServerObserver extends BaseRegionObserver {
@@ -22,14 +24,7 @@ public class TiDBRegionServerObserver extends BaseRegionObserver {
     public static final String TIDB_DIST_SQL_ENABLE = "_tidb_dist_sql_";
     public static final String TIDB_SCAN_BY_ROW = "_tidb_scan_by_row_";
     public static final String TIDB_AGGS_ENABLE = "_tidb_aggs_enable_";
-    public static final String TIDB_AGGREGATORS = "_tidb_aggregators_";
-    public static final String UNORDERED_GROUP_BY_EXPRESSIONS = "_UnorderedGroupByExpressions";
-    public static final String KEY_ORDERED_GROUP_BY_EXPRESSIONS = "_OrderedGroupByExpressions";
-    public static final String ESTIMATED_DISTINCT_VALUES = "_EstDistinctValues";
-    public static final String NON_AGGREGATE_QUERY = "_NonAggregateQuery";
-    public static final String TOPN = "_TopN";
-    public static final String UNGROUPED_AGGS = "_UngroupedAggs";
-    public static final String DELETE_AGG = "_DeleteAgg";
+    public static final String TIDB_AGGREGATOR = "_tidb_aggregator_";
 
     // Will create TiDBScanner when 'tidb_scanner' is set in the attributes of scan;
     // otherwise, follow the origin read path to do hbase scan
@@ -58,23 +53,58 @@ public class TiDBRegionServerObserver extends BaseRegionObserver {
             return s;
         }
         TiDBTableScanner ts = new TiDBTableScanner(s, scan);
-        if (!hasTiDBFlag(scan, this.TIDB_AGGS)) {
+        if (!hasTiDBFlag(scan, this.TIDB_AGGS_ENABLE)) {
             return ts;
         }
         return wrapAggScanner(e, scan, ts);
     }
 
-    private RegionScanner wrapAggScanner(final ObserverContext<RegionCoprocessorEnvironment> e,
+    private RegionScanner wrapAggScanner(final ObserverContext<RegionCoprocessorEnvironment> c,
                                          final Scan scan, final RegionScanner innerScanner) throws IOException {
-
         HRegion region = c.getEnvironment().getRegion();
         region.startRegionOperation();
 
-        KeyValue aggKeyValue = new KeyValue();
+        CountAggregator aggregator = new CountAggregator();
         // Get Agg function.
-        Aggregators aggregators = ServerAggregators.deserialize(
-                scan.getAttribute(this.TIDB_AGGREGATORS), c.getEnvironment().getConfiguration());
+        boolean hasMore;
+        boolean hasAny = false;
 
+        try {
+            synchronized (innerScanner) {
+                do {
+                    List<Cell> results = new ArrayList<Cell>();
+                    hasMore = innerScanner.nextRaw(results);
+                    if (results.isEmpty()) {
+                        break;
+                    }
+                    TRow row = new TRow();
+                    row.setKeyValues(results);
+                    /// aggregate row
+                    aggregator.aggregate(row, null);
+                    hasAny = true;
+                } while (hasMore);
+            }
+        } catch (Exception ex) {
+
+        }
+
+        final boolean hadAny = hasAny;
+        KeyValue keyValue = null;
+        if (hadAny) {
+            ImmutableBytesWritable ptr = new ImmutableBytesWritable();
+            aggregator.evaluate(null, ptr);
+            byte[] value = ptr.get();
+            byte[] AGG_ROW_KEY = Bytes.toBytes("a");
+            byte[] AGG_CF = Bytes.toBytes("acf");
+            byte[] AGG_CQ = Bytes.toBytes("acq");
+            keyValue = new KeyValue(AGG_ROW_KEY, 0, AGG_ROW_KEY.length,
+                    AGG_CF, 0, AGG_CF.length,
+                    AGG_CQ, 0, AGG_CQ.length,
+                    0, KeyValue.Type.Put,
+                    value, 0, value.length);
+        }
+
+        final KeyValue aggKeyValue = keyValue;
 
         RegionScanner scanner = new BaseRegionScanner() {
             private boolean done = !hadAny;
