@@ -24,6 +24,8 @@ public class TiDBTableScanner implements RegionScanner {
 
     private final TTable table;
 
+    private String tablePrefix;
+
     private String currentRowKey;
 
     private List<Cell> currentRow;
@@ -71,10 +73,16 @@ public class TiDBTableScanner implements RegionScanner {
             hasMore = scanner.nextRaw(innerResult);
             if (innerResult.isEmpty()) {
                 // No result.
+                hasMore = false;
                 break;
             }
             Cell data = innerResult.get(0);
             String rowKey = Bytes.toString(data.getRowArray());
+            if (!this.table.IsSameTable(rowKey)) {
+                hasMore = false;
+                break;
+            }
+
             if (!hasMore) {
                 // Last result.
                 this.currentRow.add(data);

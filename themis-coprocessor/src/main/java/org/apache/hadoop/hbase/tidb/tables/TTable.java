@@ -12,10 +12,14 @@ import org.apache.hadoop.hbase.tidb.cp.generated.TiDBProto;
  * Created by shenli on 15-11-25.
  */
 public class TTable {
+
     private TiDBProto.TTable table;
+
+    private String keyPrefix;
 
     public TTable(TiDBProto.TTable table) {
         this.table = table;
+        this.keyPrefix = String.format("t%d_r", this.table.getID());
     }
 
     public String FirstRowKey() {
@@ -25,5 +29,8 @@ public class TTable {
     getRowKey
     isSameTable
      */
+    public boolean IsSameTable(String rowKey) {
+        return rowKey.startsWith(this.keyPrefix);
+    }
 }
 
