@@ -1,6 +1,6 @@
 # Themis 
 
-[![Build Status](https://travis-ci.org/pingcap/themis.svg)](https://travis-ci.org/pingcap/themis)
+[![Build Status](https://travis-ci.org/pingcap/themis.svg?branch=master)](https://travis-ci.org/pingcap/themis)
 
 ## Introduction
 
