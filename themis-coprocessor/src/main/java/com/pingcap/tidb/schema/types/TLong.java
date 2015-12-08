@@ -7,13 +7,13 @@ import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
  */
 public class TLong extends DataType<TLong> {
 
-    public static TLong INSTANCE = new TLong();
+    public static TLong INSTANCE = new TLong(0);
 
     private long value;
 
-    public static int ByteSize = 4;
+    public static int ByteSize = 8;
 
-    public TLong(Long l) {
+    public TLong(long l) {
         super(1, new TLongCodec());
         value = l;
     }

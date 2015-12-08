@@ -1,5 +1,6 @@
 package com.pingcap.tidb.expression.aggregate;
 
+import com.pingcap.tidb.expression.Expression;
 import com.pingcap.tidb.schema.TRow;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 

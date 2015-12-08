@@ -4,6 +4,8 @@ package org.apache.hadoop.hbase.tidb.tables;
  * Created by shenli on 15-11-25.
  */
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.tidb.cp.generated.TiDBProto;
 
 /**
@@ -17,9 +19,12 @@ public class TTable {
 
     private String keyPrefix;
 
+    private static final Log LOG = LogFactory.getLog(TTable.class);
+
     public TTable(TiDBProto.TTable table) {
         this.table = table;
         this.keyPrefix = String.format("t%d_r", this.table.getID());
+        LOG.info(this.keyPrefix);
     }
 
     public String FirstRowKey() {

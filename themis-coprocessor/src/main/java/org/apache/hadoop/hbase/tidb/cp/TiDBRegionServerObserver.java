@@ -5,6 +5,8 @@ import com.pingcap.tidb.expression.aggregate.Aggregators;
 import com.pingcap.tidb.expression.aggregate.CountAggregator;
 import com.pingcap.tidb.expression.aggregate.ServerAggregators;
 import com.pingcap.tidb.schema.TRow;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.coprocessor.BaseRegionObserver;
@@ -26,14 +28,19 @@ public class TiDBRegionServerObserver extends BaseRegionObserver {
     public static final String TIDB_AGGS_ENABLE = "_tidb_aggs_enable_";
     public static final String TIDB_AGGREGATOR = "_tidb_aggregator_";
 
+    private static final Log LOG = LogFactory.getLog(TiDBRegionServerObserver.class);
+
     // Will create TiDBScanner when 'tidb_scanner' is set in the attributes of scan;
     // otherwise, follow the origin read path to do hbase scan
     @Override
     public RegionScanner postScannerOpen(final ObserverContext<RegionCoprocessorEnvironment> e,
                                         final Scan scan, final RegionScanner s) throws IOException {
+        LOG.info("Enter TiDB postScannerOpen");
         if (!this.hasTiDBFlag(scan, this.TIDB_DIST_SQL_ENABLE)) {
+            LOG.info("TiDB dist sql disabled");
             return s;
         }
+        LOG.info("TiDB dist sql enabled");
         try {
             return buildTiDBScanner(e, scan, s);
         } catch (Throwable ex) {
@@ -49,9 +56,11 @@ public class TiDBRegionServerObserver extends BaseRegionObserver {
 
     private RegionScanner buildTiDBScanner(final ObserverContext<RegionCoprocessorEnvironment> e,
                                          final Scan scan, final RegionScanner s) throws IOException {
+        LOG.info("Enter buildTiDBScanner");
         if (!hasTiDBFlag(scan, this.TIDB_SCAN_BY_ROW)) {
             return s;
         }
+        LOG.info("Scan by row");
         TiDBTableScanner ts = new TiDBTableScanner(s, scan);
         if (!hasTiDBFlag(scan, this.TIDB_AGGS_ENABLE)) {
             return ts;
@@ -61,6 +70,7 @@ public class TiDBRegionServerObserver extends BaseRegionObserver {
 
     private RegionScanner wrapAggScanner(final ObserverContext<RegionCoprocessorEnvironment> c,
                                          final Scan scan, final RegionScanner innerScanner) throws IOException {
+        LOG.info("Enter wrapAggScanner");
         HRegion region = c.getEnvironment().getRegion();
         region.startRegionOperation();
 
@@ -73,12 +83,13 @@ public class TiDBRegionServerObserver extends BaseRegionObserver {
             synchronized (innerScanner) {
                 do {
                     List<Cell> results = new ArrayList<Cell>();
-                    hasMore = innerScanner.nextRaw(results);
+                    hasMore = innerScanner.next(results);
                     if (results.isEmpty()) {
                         break;
                     }
                     TRow row = new TRow();
                     row.setKeyValues(results);
+                    LOG.info("Find Row: " + results.size() + ", " + row);
                     /// aggregate row
                     aggregator.aggregate(row, null);
                     hasAny = true;
@@ -95,14 +106,15 @@ public class TiDBRegionServerObserver extends BaseRegionObserver {
             aggregator.evaluate(null, ptr);
             byte[] value = ptr.get();
             byte[] AGG_ROW_KEY = Bytes.toBytes("a");
-            byte[] AGG_CF = Bytes.toBytes("acf");
-            byte[] AGG_CQ = Bytes.toBytes("acq");
+            byte[] AGG_CF = Bytes.toBytes("f");
+            byte[] AGG_CQ = Bytes.toBytes("q");
             keyValue = new KeyValue(AGG_ROW_KEY, 0, AGG_ROW_KEY.length,
                     AGG_CF, 0, AGG_CF.length,
                     AGG_CQ, 0, AGG_CQ.length,
                     0, KeyValue.Type.Put,
                     value, 0, value.length);
         }
+        LOG.info("HasAny: "+hasAny + ", keyValue "+ keyValue);
 
         final KeyValue aggKeyValue = keyValue;
 
@@ -126,9 +138,11 @@ public class TiDBRegionServerObserver extends BaseRegionObserver {
 
             @Override
             public boolean next(List<Cell> results) throws IOException {
+                LOG.info("Enter final next");
                 if (done) return false;
                 done = true;
                 results.add(aggKeyValue);
+                LOG.info("Leave final next " + aggKeyValue.getValueArray());
                 return false;
             }
 

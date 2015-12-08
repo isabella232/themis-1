@@ -2,6 +2,7 @@ package com.pingcap.tidb.expression;
 
 import java.util.List;
 
+import com.pingcap.tidb.schema.TRow;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import com.pingcap.tidb.schema.DataItem;
 
@@ -10,6 +11,6 @@ import com.pingcap.tidb.schema.DataItem;
  */
 public interface Expression extends DataItem {
 
-    boolean evaluate(List<DataItem> data, ImmutableBytesWritable ptr);
+    boolean evaluate(TRow row, ImmutableBytesWritable ptr);
 
 }

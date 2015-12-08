@@ -12,14 +12,13 @@ public abstract class BaseAggregator implements Aggregator {
     public BaseAggregator() {
     }
 
-    @Override
     public boolean isNullable() {
         return true;
     }
 
     @Override
     public int getSize() {
-        return SizedUtil.OBJECT_SIZE;
+        return 0;
     }
 
     ImmutableBytesWritable evalClientAggs(Aggregator clientAgg) {
@@ -27,11 +26,6 @@ public abstract class BaseAggregator implements Aggregator {
         ImmutableBytesWritable ptr = new ImmutableBytesWritable();
         ca.evaluate(null, ptr);
         return ptr;
-    }
-
-    @Override
-    public <T> T accept(ExpressionVisitor<T> visitor) {
-        return null;
     }
 
 }

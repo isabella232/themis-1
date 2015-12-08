@@ -11,5 +11,6 @@ abstract public class Aggregators {
     protected final Aggregator[] aggregators;
 
     public Aggregators() {
+        this.aggregators = new Aggregator[]{};
     }
 }
