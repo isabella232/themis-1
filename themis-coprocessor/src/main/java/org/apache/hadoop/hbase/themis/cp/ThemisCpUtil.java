@@ -33,7 +33,6 @@ import org.apache.hadoop.hbase.themis.columns.Column;
 import org.apache.hadoop.hbase.themis.columns.ColumnUtil;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.util.Pair;
-import org.apache.hadoop.yarn.webapp.hamlet.HamletSpec._;
 
 public class ThemisCpUtil {
   // Filters which only use the rowkey will be classified into ALLOWED_ROWKEY_FILTER_CLASSES class,

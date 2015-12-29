@@ -10,8 +10,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <hbase.version>0.98.5-hadoop2</hbase.version>
-    <hadoop.version>2.2.0</hadoop.version>
+    <hbase.version>0.98.6-cdh5.3.8</hbase.version>
+    <hadoop.version>2.5.0-cdh5.3.8</hadoop.version>
     <themis.version>1.0-SNAPSHOT</themis.version>
   </properties>
 
@@ -73,4 +73,10 @@
       </plugins>
     </pluginManagement>
   </build>
+<repositories>
+    <repository>
+      <id>cloudera</id>
+      <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
+    </repository>
+  </repositories>
 </project>

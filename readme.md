@@ -13,8 +13,12 @@ pingcap/themis is forked from [XiaoMi/themis](https://github.com/XiaoMi/themis),
 3. Add batch get APIs.
 4. Add golang client: [pingcap/go-themis](https://github.com/pingcap/go-themis)
 
-depends on hbase >= 0.98.5 with hadoop.version=2.0.0-alpha.  
+depends on HBase=0.98.6 with hadoop.version=2.0.0-alpha.
+cloudera version=5.3.8(some lib of other verstions may not match HBase version)
 Tested on Oracle JDK7
+
+Notice: **Please make sure use correct above software version, any other version
+may occur unexpect error.**
 
 ## Usage
 
@@ -23,9 +27,9 @@ Tested on Oracle JDK7
 - Get the latest source code of Themis:
 ```
 git clone https://github.com/pingcap/themis.git
-```  
+```
 
-- Build Themis 
+- Build Themis
 ```
 cd themis
 mvn clean package -DskipTests
@@ -35,21 +39,21 @@ mvn clean package -DskipTests
 
 - Copy themis coprocessor to $HBASE_ROOT/lib/
 ```
-cp themis-coprocessor/target/themis-coprocessor-1.0-SNAPSHOT-jar-with-dependencies.jar $HBASE_ROOT/lib
+cp themis-coprocessor/target/themis-coprocessor-1.0-SNAPSHOT-jar-with-dependencies.jar $CDH/lib/hbase/lib
 ```
 
-- Add configurations for themis coprocessor in hbase-site.xml:
+$CDH is normally `/opt/cloudera/parcels/CDH/` if you install cloudera
+in default directory
 
-```
-<property>
-    <name>hbase.coprocessor.user.region.classes</name>
-    <value>org.apache.hadoop.hbase.themis.cp.ThemisEndpoint,org.apache.hadoop.hbase.themis.cp.ThemisScanObserver,org.apache.hadoop.hbase.regionserver.ThemisRegionObserver</value>
-</property>
-<property>
-    <name>hbase.coprocessor.master.classes</name>
-    <value>org.apache.hadoop.hbase.master.ThemisMasterObserver</value>
-</property>
-```
+- Add configurations for themis coprocessor in cloudera:
+
+    - Add `org.apache.hadoop.hbase.themis.cp.ThemisEndpoint`,
+    `org.apache.hadoop.hbase.themis.cp.ThemisScanObserver`,
+    `org.apache.hadoop.hbase.themis.cp.ThemisScanObserver` to `hbase.coprocessor.region.classes`
+    in region configuration
+    - Add `org.apache.hadoop.hbase.master.ThemisMasterObserver` to
+    `hbase.coprocessor.master.classes` in master configuration
+
 - Restart HBase.
 - Enjoy it.
 
